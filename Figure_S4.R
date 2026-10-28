@@ -1,12 +1,22 @@
-# Script to plot residuals of the best multiple regressions for each response variable
-library(nlme)
-library(dplyr)
-library(ggplot2)
-library(patchwork)
+# ==============================================================================
+# Figure S4: Residual diagnostics of the sub-models
+#
+#   Refits the six final sub-models and plots residual diagnostics
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# 1. Load data and fit models ------------------------------------------------
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
+
 load("Data/SEM_data_all_GSA.RData")
 
 # Scale continuous variables and convert GSA to factor
@@ -82,7 +92,7 @@ m.biomass <- nlme::lme(log_biomass ~
   random = ~1 | year, correlation = corExp(value = c(17.3, 0.2), form = ~longitude + latitude | year/GSA, nugget = TRUE), data = SEM_data_complete, method = "REML")
 
 
-# 2. Plot residuals -----------------------------------------------------------
+# Plot residuals
 plot_diagnostics <- function(model, model_name, letter, bins = 50){
 
   res <- resid(model, type = "normalized")
@@ -128,4 +138,4 @@ fig_residuals <- (diag_A) /
 (diag_F)
 
 # Save figure
-ggsave("Figures/Figure_S4.png", plot = fig_residuals, width = 15, height = 15, dpi = 300)
+# ggsave("Figures/Figure_S4.png", plot = fig_residuals, width = 15, height = 15, dpi = 300)

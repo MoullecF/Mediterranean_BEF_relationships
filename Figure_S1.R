@@ -1,11 +1,22 @@
-# Script to plot number of hauls in each GSA and year
-# Load libraries
-library(ggplot2)
-library(dplyr)
+# ==============================================================================
+# Figure S1: Number of hauls per GSA and year
+#
+#   Plots the number of hauls in each GSA and year.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# Load data
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
+
 load("Data/SEM_data_all_GSA.RData")
 
 # Plot number of hauls in each GSA and year
@@ -13,7 +24,6 @@ SEM_data$id <- 1:nrow(SEM_data)
 haul_counts_gsa <- SEM_data %>%
   distinct(year, GSA, id) %>%
   count(year, GSA, name = "haul_count") %>%
-  # reorder GSA factor levels for plotting
   mutate(GSA = factor(GSA, levels = c("Aegean_Sea", "Adriatic_Sea", "Gulf_of_Lion", "Catalan_Sea")))
 
 gg_number_hauls_gsa <- ggplot(haul_counts_gsa, aes(year, GSA, fill = haul_count)) +
@@ -37,4 +47,4 @@ gg_number_hauls_gsa <- ggplot(haul_counts_gsa, aes(year, GSA, fill = haul_count)
       color = GSA_colors[levels(haul_counts_gsa$GSA)],
       face = "bold"))
 
-ggsave("Figures/Figure_S1.png", plot = gg_number_hauls_gsa, width = 8, height = 4, dpi = 300)
+# ggsave("Figures/Figure_S1.png", plot = gg_number_hauls_gsa, width = 8, height = 4, dpi = 300)

@@ -1,23 +1,22 @@
+# ==============================================================================
+# Extract environmental and anthropogenic covariates at haul positions
+#
+# Notes: Requires a Copernicus Marine account and a Python environment (reticulate).
+# The FPI and gravity layers are external inputs
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
+
 rm(list = ls())
 
-## Library ----
-load("tools/install_load_function.RData")
-
-# Install/load required packages
-install_load_function(
-  
-  # list of required packages
-  c("dplyr",
-    "tidyr",
-    "ggplot2",
-    "reticulate", # Python interface
-    "copernicusR",
-    "usethis", # edit R profile or environment
-    "lubridate", # work with raster dates
-    "sf",
-    "terra",
-    "gfwr"
-  ))
+# ==============================================================================
+# 2. Load community and diversity data
+# ==============================================================================
 
 # Set GSA number
 GSA <- c(6, 7, 17, 18, 22, 23)
@@ -33,20 +32,23 @@ haul_meta <- community %>%
   distinct(haul_id, month, year, depth, longitude, latitude)
 
 # total Number of unique hauls and number of hauls with tric < 5
-total_hauls <- n_distinct(diversity$haul_id) # 11093 unique hauls
-hauls_tric_lt_5 <- sum(diversity$tric < 5, na.rm = TRUE) # 0!
+total_hauls <- n_distinct(diversity$haul_id)
+hauls_tric_lt_5 <- sum(diversity$tric < 5, na.rm = TRUE)
 
 data <- diversity %>%
   left_join(haul_biomass, by = "haul_id") %>%
   left_join(haul_meta, by = "haul_id") %>%
-  filter(month %in% c(5, 6, 7, 8)) %>% # select only month 5 to 8. Remove 928 hauls
-  filter(tric > 4) %>% # remove hauls with tric < 5 (no effect on the dataset)
+  filter(month %in% c(5, 6, 7, 8)) %>% # select only month 5 to 8
+  filter(tric > 4) %>% 
   as.data.frame()
+
+# ==============================================================================
+# 3. Download Copernicus Marine data
+# ==============================================================================
 
 ### Download Copernicus data ----
 
-# Install miniconda (Python) -
-# https://www.anaconda.com/docs/getting-started/miniconda/main
+# Install miniconda (Python) - https://www.anaconda.com/docs/getting-started/miniconda/main
 # install_miniconda()
 
 # Check that miniconda is installed
@@ -61,8 +63,9 @@ py_config() # check path and version
 
 # Access the data using your credentials (Copernicus account)
 # Register at: https://data.marine.copernicus.eu/register?pk_vid=11ceae9d3160528d17743415560fb363
-setup_copernicus(username = "fabien.moullec@umontpellier.fr",
-                 password = "C7FR!b75z!zrn.A",
+# Credentials removed from the repository: replace the placeholders with your own Copernicus Marine account.
+setup_copernicus(username = "<COPERNICUS_USERNAME>",
+                 password = "<COPERNICUS_PASSWORD>",
                  store_credentials = TRUE)
 
 # Define spatial and temporal extent of the data to download
@@ -70,7 +73,7 @@ ye <- range(data$year)
 la <- range(data$latitude)
 lo <- range(data$longitude)
 
-# Download temperature data (surface and bottom) from MEDSEA_MULTIYEAR_PHY_006_004
+# Download temperature data (surface and bottom)
 f_1 <- copernicus_download(
   dataset_id = "cmems_mod_med_phy-temp_my_4.2km_P1M-m", # monthly
   variables = c("thetao", "bottomT"), # sst, sbt
@@ -95,7 +98,7 @@ names(raster_t_data)
 # Visual check
 terra::plot(raster_t_data[[1:12]])
 
-# Download salinity data from MEDSEA_MULTIYEAR_PHY_006_004
+# Download salinity data 
 f_2 <- copernicus_download(dataset_id = "cmems_mod_med_phy-sal_my_4.2km_P1M-m", # monthly
                            variables = c("so"), # salinity
                            bbox = c(lo[1] - 0.3, 
@@ -146,115 +149,9 @@ names(chla_stack)
 # Visual check
 terra::plot(chla_stack[[1:12]])
 
-## Download Global Fishing Watch data ----
-
-# Install gfwr package
-#remotes::install_github("GlobalFishingWatch/gfwr",
-#                        dependencies = TRUE)
-
-# To access the API, a token is needed. It can be requested here:
-# https://gateway.api.globalfishingwatch.org/v3/auth?client=gfw&callback=https%3A%2F%2Fglobalfishingwatch.org%2Four-apis%2Ftokens&locale=en
-
-# Then, the token must be saved to the .Renviron file using 
-#usethis::edit_r_environ() # write GFW_TOKEN="YOUR_TOKEN" and save .Renviron
-
-# Restart R for changes to take effect
-
-# Check that the token variable has been set
-#Sys.getenv("GFW_TOKEN") # should return the token
-
-# Create the object key with the token
-#key <- gfw_auth()
-
-# Create an sf object to define the spatial extent of the data
-#ye <- range(data$year)
-#la <- range(data$latitude)
-#lo <- range(data$longitude)
-
-#polygon <- sf::st_bbox(c(xmin = lo[1] - 1,
-  #                        xmax = lo[2] + 1,
-  #                        ymin = la[1] - 1,
-  #                        ymax = la[2] + 1),
-  #                      crs = 4326) %>%
-  # sf::st_as_sfc() %>%
-  # sf::st_as_sf()
-
-# Only one year of data can be imported at a time, so a loop is necessary
-# years <- (ye[1] - 1):ye[2]
-
-# fishing_list <- vector("list", length(years))
-
-# for (i in seq_along(years)) {
-  
-#   cat("Downloading fishing data for year", years[i], "...\n")
-#   yr <- years[i]
-  
-#   fishing_list[[i]] <- gfw_ais_fishing_hours(
-#     spatial_resolution = "HIGH",    # 0.01 degree or ~ 1km
-#     temporal_resolution = "MONTHLY",
-#     group_by = "GEARTYPE",
-#     start_date = paste0(yr, "-01-01"),
-#     end_date = paste0(yr, "-12-31"),
-#     region_source = "USER_SHAPEFILE",
-#     region = polygon
-#   )
-# }
-
-# # Bind all data frames
-# fishing_data <- do.call(rbind, fishing_list)
-
-# # Save
-# save(fishing_data, file = paste0("Data/Environment/fishing_data_GSA_",GSA,".RData"))
-
-# # What gears are used in the area?
-# prop.table(table(fishing_data$geartype)) # no GEAR TYPE !
-
-# # Keep only trawling and prepare for raster format
-# trawling_data <- fishing_data %>%
-#   #filter(geartype == "trawlers") %>% # focus on trawling (60% of observations)
-#   mutate(time = as.Date(paste0(`Time Range`, "-01"))) %>% # prepare time column
-#   group_by(time, Lat, Lon) %>%
-#   summarize(fishing_hours = sum(`Apparent Fishing Hours`, na.rm = TRUE),
-#             .groups = "drop") 
-
-# # Prepare a raster grid to extract values
-# r_grid <- rast(
-#   xmin = min(trawling_data$Lon),
-#   xmax = max(trawling_data$Lon),
-#   ymin = min(trawling_data$Lat),
-#   ymax = max(trawling_data$Lat),
-#   resolution = 0.01  # fishing_data resolution
-# )
-
-# # Split data by time (month and year)
-# time_list <- split(trawling_data, trawling_data$time) # these will be the layers
-
-# # Rasterise each time layer
-# r_list <- lapply(time_list, function(df) {
-  
-#   pts <- vect(df, geom = c("Lon", "Lat"), crs = "EPSG:4326")
-  
-#   rasterize(
-#     pts,
-#     r_grid,
-#     field = "fishing_hours",
-#     fun = "sum"   # sum if multiple points per cell
-#   )
-# })
-
-# # Stack the layers and name them
-# fishing_stack <- rast(r_list)
-
-# time(fishing_stack) <- as.Date(names(time_list))
-
-# # Check
-# fishing_stack
-
-# terra::plot(log(fishing_stack[[100]]), main = paste0("Fishing hours in ", names(fishing_stack)[100], " (log scale)")) # check a layer
-
-# # Save intermediate
-# writeRaster(fishing_stack, file = paste0("Data/Environment/fish_stack_GSA_",GSA,".tiff"), overwrite = TRUE)
-
+# ==============================================================================
+# 5. Extract environmental and anthropogenic variables at haul positions
+# ==============================================================================
 
 ## Compute mean, sd, and sum values ----
 
@@ -278,21 +175,10 @@ environmental_data <- data %>%
   group_by(haul_id, year, latitude, longitude) %>%
   summarize(depth = median(depth), .groups = "drop")
 
-# CRS for extraction (equal area)
-#y_center <- round(mean(range(environmental_data$latitude, na.rm = TRUE)))
-#x_center <- round(mean(range(environmental_data$longitude, na.rm = TRUE)))
-
-# equal_crs <- paste0("+proj=laea +lat_0=",
-#                     y_center,
-#                     " +lon_0=",
-#                     x_center,
-#                     " +datum=WGS84 +units=km +no_defs")
-
 # Haul point positions for extraction
 haul_points <- environmental_data %>% 
   vect(geom = c("longitude", "latitude"),
-       crs = "EPSG:4326") #%>% # should be the correct crs
-  #project(equal_crs)
+       crs = "EPSG:4326") 
 
 # Month to divide years
 earliest_sampling_month <- min(as.numeric(unique(data$month)))
@@ -374,7 +260,7 @@ colSums(is.na(environmental_data))
 load("Tools/plot_env_na.RData")
 plot_env_na(environmental_data, raster = sst_stack[[1]], raster_name = "SST mean (°C)", env_vars = c("sst_mean"), point_size = 1.8, point_alpha = 1, buf = 1)
 
-# Extract FPI values for each gear type for the year before
+# Extract FPI values for each gear type
 stacks <- list(FPI_OTB = "FPI_OTB", FPI_PS = "FPI_PS", FPI_SSF = "FPI_SSF")
 
 environmental_data$FPI_OTB <- NA
@@ -444,6 +330,10 @@ plot_env_na(environmental_data, raster = Gravity_layer[[1]], raster_name = "Grav
 # Check if there are any NAs in the extracted values (should not be, but just in case)
 colSums(is.na(environmental_data))
 
+# ==============================================================================
+# 6. Clean and save
+# ==============================================================================
+
 ## Clean and save ----
 
 # Final cleanup 
@@ -459,4 +349,4 @@ environmental_data <- environmental_data %>%
   log_depth = log(depth)) 
 
 # Save
-save(environmental_data, file = paste0("Data/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"),".RData"))
+# save(environmental_data, file = paste0("Data/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"),".RData"))

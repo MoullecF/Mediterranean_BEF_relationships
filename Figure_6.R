@@ -1,16 +1,26 @@
-library(nlme)
-library(marginaleffects)
-library(dplyr)
-library(ggplot2)
+# ==============================================================================
+# Figure 6: Slope contrasts between GSAs
+#
+#   Refits the biomass model with biodiversity x GSA interactions and plots pairwise slope contrasts between GSAs.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# Load the data
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
+
 load("Data/SEM_data_all_GSA.RData")
 
 # Data preprocessing: scale numeric variables and set GSA as a factor with specific levels
 SEM_data <- SEM_data %>%
-# Add log transformed CWM_length to the dataset
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
   mutate(across(c(log_biomass, fric, feve, tric, teve, Length_max_cwm, log_Length_max_cwm,
                    chla_mean, depth, FPI_OTB, FPI_SSF, gravity,
@@ -149,4 +159,4 @@ slope_plot <- ggplot(slope_comparisons_me, aes(x = contrast_final, y = metric, f
   theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title = element_text(face = "bold", size = 11)) +
   labs(x = "GSA comparison", y = "Biodiversity metrics", title = "Pairwise differences between GSA slopes")
 
-ggsave("Figures/Figure_6.png", plot = slope_plot, width = 6, height = 4, dpi = 300)
+# ggsave("Figures/Figure_6.png", plot = slope_plot, width = 6, height = 4, dpi = 300)

@@ -1,31 +1,24 @@
-# Script to build SEM at the Mediterranean scale to test the relationship between environment, fishing, diversity and ecosystem functioning in GSA 7
-# Author: Fabien Moullec
-# Date: 2026-04-24
-# --------------------------------------------------------------------------------
+# ==============================================================================
+# Build the SEM dataset
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-load("Tools/install_load_function.RData")
+# Helper functions (external to the repository; the first path is outside the project folder)
 load("Tools/make_correlation_plot_function.RData")
 source("~/Scripts R/Divers/Variance_Inflation_Factor.R")
 load("Tools/corvif_function.RData")
 
-# Install/load required packages
-install_load_function(
-  
-  # list of required packages
-  c("dplyr",
-    "tidyr",
-    "ggplot2",
-    "ggmap",
-    "ggcorrplot",
-    "mgcv",
-    "sp",
-    "MASS",
-    "spdep",
-    "geoR",
-    "MuMIn"
-    ))
+# ==============================================================================
+# 2. Load and merge data
+# ==============================================================================
 
 # GSAs to process
 GSA <- c(6, 7, 17, 18, 22, 23)
@@ -64,7 +57,7 @@ ggplot(na_data, aes(x = longitude, y = latitude)) +
   geom_point(color = "red", size = 0.1) +
   theme_bw() +
   labs(title = "Spatial distribution of NA values", x = "Longitude", y = "Latitude")
-# NAs are in the Gulf of Euboea so ok
+# NAs are in the Gulf of Euboea (no env  data) so ok
 
 # Remove hauls with NA values in any of the variables of interest and create a key for coordinates to check for duplicates
 data <- data %>% 
@@ -75,7 +68,7 @@ data <- data %>%
 if (any(duplicated(data$coords_key))) {
   message(paste0("There are ", sum(duplicated(data$coords_key)), " duplicate coordinates."))
   message("[Spatial] Duplicate coordinates detected — applying small jitter (1e-5 degrees).")
-# Add small jitter to duplicate coordinates
+# Add very small jitter to duplicate coordinates
   data <- data %>%
     group_by(coords_key) %>%
     mutate(
@@ -87,6 +80,7 @@ if (any(duplicated(data$coords_key))) {
                          latitude)
     ) %>%
     ungroup()
+
   # Check again for duplicates
   data <- data %>%
     mutate(coords_key = paste(longitude, latitude, sep = "_"))
@@ -102,13 +96,13 @@ if (any(duplicated(data$coords_key))) {
 options(max.print = 2000)
 print(quantile(data$Biomass, probs = seq(0, 1, 0.0005))) 
 
-# Remove biomass outliers, log-transform chla_mean and remove hauls with CWM of max length > 250 cm (as one species is driving the index (HEXAGRI))
+# Remove biomass outliers, log-transform chla_mean and remove hauls with CWM of max length > 250 cm (as only one rare species is driving the index (HEXAGRI))
 data <- data %>%
   filter(Biomass > 15 & Biomass < 5700) %>% # removed 0.5% of lowest and highest values (1% in total), 10035 hauls remaining
   mutate(log_chla_mean = log(chla_mean)) %>%
-  filter(Length_max_cwm <= 250) # 1 hauls removed
+  filter(Length_max_cwm <= 250)
 
-# Number of hauls per GSA after filtering, group 17 and 18 and 22 and 23 together as they are the same GSA
+# Number of hauls per GSA after filtering, group 17 and 18 and 22 and 23 together as they are the "same" sub-regions
 data %>%
   mutate(GSA_grouped = dplyr::recode(GSA,
     `6` = "6",
@@ -121,28 +115,33 @@ data %>%
   group_by(GSA_grouped) %>%
   summarise(n_hauls = n())
 
+# ==============================================================================
+# 3. Collinearity screening
+# ==============================================================================
+
 ### Test for correlation between covariates
 df_cor1 = data[, c("tric", "teve", "feve", "fric",
                   "Length_max_cwm", "log_biomass", "depth",
                   "sst_mean", "sst_sd", "sbt_mean", "sbt_sd", "so_mean", 
                   "so_sd", "chla_mean", "FPI_OTB", "FPI_PS", "FPI_SSF", "gravity")]
 
-cor1 <- make_correlation_plot(df_cor = df_cor1, threshold = 0.7, method = "pearson") # many correlations > 0.7, especially between functional diversity metrics and between environmental variables
+cor1 <- make_correlation_plot(df_cor = df_cor1, threshold = 0.7, method = "pearson") 
 usdm::vifstep(as.data.frame(df_cor1), th=5, keep= c("log_biomass")) # keep log_biomass as it is the response variable
 
-#  sbt_sd and FPI_PS should be removed because they are highly correlated with other variables (correlation > 0.7 and high VIF)
+#  sbt_sd and FPI_PS removed
 df_cor2 = data[, c("tric", "teve", "feve", "fric", "Length_max_cwm", "log_biomass",
                     "depth", "sst_mean", "sst_sd", "sbt_mean", "so_mean", 
                   "so_sd", "chla_mean", "FPI_OTB", "FPI_SSF", "gravity")]
 
 
 corr_fig <- ggcorrplot(cor(df_cor2), type = "lower", lab = TRUE, method="circle", colors = c("red", "white", "blue"), digits = 2, legend.title = "Pearson\nCorrelation", ggtheme=theme_bw())
-ggsave("Figures/Figure_correlations.png", plot = corr_fig, width = 10, height = 10, dpi = 300)
-# Figure caption: Correlation matrix of the covariates used in the SEM analysis. The lower triangle shows the Pearson correlation coefficients between pairs of variables, with color indicating the strength and direction of the correlation (blue for positive, red for negative).
-
 usdm::vifstep(as.data.frame(df_cor2), th=5, keep= c("log_biomass")) # keep log_biomass as it is the response variable
 
-# Create data frame for SEM with only the variables of interest (those that are not highly correlated with others)
+# ==============================================================================
+# 4. Build and save the SEM dataset
+# ==============================================================================
+
+# Create data frame for SEM with only the variables of interest
 SEM_data <- data %>%
     dplyr::select(c("log_biomass", # biomass
                     "tric", "teve", # taxonomic diversity metrics
@@ -164,4 +163,4 @@ dplyr::mutate(GSA = as.factor(GSA)) %>%
 as.data.frame()
 
 # Save the data frame for SEM
-save(SEM_data, file = "Data/SEM_data_all_GSA.RData")
+# save(SEM_data, file = "Data/SEM_data_all_GSA.RData")

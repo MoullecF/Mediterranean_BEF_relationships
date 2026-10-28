@@ -1,11 +1,24 @@
-library(rstatix)
-library(multcompView)
-library(ggplot2)
-library(dplyr)
+# ==============================================================================
+# Figure S2: Metrics by GSA
+#
+#   Plots mean metric values by GSA with Welch's ANOVA / Games-Howell letters.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
+
+rm(list = ls())
+
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
 
 load("Data/SEM_data_all_GSA.RData")
 
-# drop NAs if needed
 options(na.action = "na.omit")
 
 SEM_data <- SEM_data %>%
@@ -84,7 +97,7 @@ p_vec_funcR <- setNames(pw_funcR$p.adj, paste(pw_funcR$group1, pw_funcR$group2, 
 p_vec_funcEv <- setNames(pw_funcEv$p.adj, paste(pw_funcEv$group1, pw_funcEv$group2, sep = "-"))
 p_vec_CWM <- setNames(pw_CWM$p.adj, paste(pw_CWM$group1, pw_CWM$group2, sep = "-"))
 
-# Compute compact letter display (CLD)
+# Compute compact letter display
 cld_logBiomass <- multcompLetters(p_vec_logBiomass)$Letters
 cld_taxoR <- multcompLetters(p_vec_taxoR)$Letters
 cld_taxoEv <- multcompLetters(p_vec_taxoEv)$Letters
@@ -151,7 +164,6 @@ Log_biomass_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Log_biomass, fi
   theme_classic() +
   labs(x = NULL, y = "Log biomass (g/ha)") +
   theme(legend.position = "none")
-Log_biomass_gsa
 
 taxo_rich_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Taxonomic_richness, fill = GSA)) +
   geom_col(width = 0.7) +
@@ -166,7 +178,6 @@ taxo_rich_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Taxonomic_richnes
   theme_classic() +
   labs(x = NULL, y = "Taxonomic richness") +
   theme(legend.position = "none")
-taxo_rich_gsa
 
 taxo_ev_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Taxonomic_evenness, fill = GSA)) +
   geom_col(width = 0.7) +
@@ -181,7 +192,6 @@ taxo_ev_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Taxonomic_evenness,
   theme_classic(base_size = 12) +
   labs(x = NULL, y = "Taxonomic evenness") +
   theme(legend.position = "none")
-taxo_ev_gsa
 
 Func_rich_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Functional_richness, fill = GSA)) +
   geom_col(width = 0.7) +
@@ -196,7 +206,6 @@ Func_rich_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Functional_richne
   theme_classic(base_size = 12) +
   labs(x = NULL, y = "Functional richness") +
   theme(legend.position = "none")
-Func_rich_gsa
 
 Func_ev_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Functional_evenness, fill = GSA)) +
   geom_col(width = 0.7) +
@@ -211,7 +220,6 @@ Func_ev_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Functional_evenness
   theme_classic(base_size = 12) +
   labs(x = NULL, y = "Functional evenness") +
   theme(legend.position = "none")
-Func_ev_gsa
 
 CWM_length_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Log_CWM_length, fill = GSA)) +
   geom_col(width = 0.7) +
@@ -226,12 +234,10 @@ CWM_length_gsa <- ggplot(metrics_summary, aes(x = GSA, y = mean_Log_CWM_length, 
   theme_classic(base_size = 12) +
   labs(x = NULL, y = "Log CWM length (cm)") +
   theme(legend.position = "none")
-CWM_length_gsa
 
 # Combine all plots into a single figure
 combined_plot <- (Log_biomass_gsa | CWM_length_gsa) / (taxo_rich_gsa | taxo_ev_gsa) / (Func_rich_gsa | Func_ev_gsa) +
   plot_layout(guides = "collect") +
   plot_annotation(tag_levels = "A")
-combined_plot
 
-ggsave("Figures/Figure_S2.png", plot = combined_plot, width = 12, height = 17, dpi = 300)
+# ggsave("Figures/Figure_S2.png", plot = combined_plot, width = 12, height = 17, dpi = 300)

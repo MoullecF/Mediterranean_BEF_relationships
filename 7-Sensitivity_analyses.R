@@ -1,10 +1,24 @@
-library(nlme)
-library(piecewiseSEM)
-library(marginaleffects)
+# ==============================================================================
+# Sensitivity analyses of the biomass sub-model
+#
+#   Compares the main biomass model with taxonomic-only and functional-only specifications,
+#   slopes by GSA across specifications, collinearity and spatial block cross-validation
+#
+# Warning:
+#   Cross-validation refits models repeatedly and may take a long time
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
 # 1. Load data 
+
 load("Data/SEM_data_all_GSA.RData")
 
 # Prepare the data
@@ -50,7 +64,6 @@ m.biomass <- nlme::lme(log_biomass ~
          tric:GSA_Aegean_Sea + tric:GSA_Catalan_Sea + tric:GSA_Gulf_of_Lion,
   random = ~1 | year, correlation = corExp(value = c(17.3, 0.2), form = ~longitude + latitude | year/GSA, nugget = TRUE),
   data = SEM_data_complete, method = "REML", na.action = na.fail)
-
 
 ### Refit log biomass sub-model with taxonomic and functional metrics separately
 # drops every term containing a metric (main effect + GSA interaction), factor or dummy coding
@@ -177,13 +190,13 @@ cv_oof <- data.frame(haul_id = dat$haul_id, GSA = dat$GSA, year = dat$year, bloc
 names(cv_oof)[-(1:6)] <- paste0("pred_", names(cv_res))
 
 # ---- save ----
-out_dir <- "Sensitivity_analyses"; dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
-saveRDS(list(cv_res = cv_res, fold_assignment = dat[, c("haul_id","GSA","block","fold")],
-             summary = cv_summary, folds = cv_folds, delta = cv_delta,
-             by_gsa = cv_by_gsa, oof = cv_oof), file.path(out_dir, "cv_results.rds"))
-write.csv(cv_summary,       file.path(out_dir, "cv_summary.csv"),       row.names = FALSE)
-write.csv(cv_folds,         file.path(out_dir, "cv_per_fold.csv"),      row.names = FALSE)
-write.csv(cv_delta_summary, file.path(out_dir, "cv_delta_vs_main.csv"), row.names = FALSE)
-write.csv(cv_by_gsa,        file.path(out_dir, "cv_by_gsa.csv"),        row.names = FALSE)
-write.csv(cv_oof,           file.path(out_dir, "cv_out_of_fold_predictions.csv"), row.names = FALSE)
+# out_dir <- "Outputs/Sensitivity_analyses"; dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+# saveRDS(list(cv_res = cv_res, fold_assignment = dat[, c("haul_id","GSA","block","fold")],
+#              summary = cv_summary, folds = cv_folds, delta = cv_delta,
+#              by_gsa = cv_by_gsa, oof = cv_oof), file.path(out_dir, "cv_results.rds"))
+# write.csv(cv_summary,       file.path(out_dir, "cv_summary.csv"),       row.names = FALSE)
+# write.csv(cv_folds,         file.path(out_dir, "cv_per_fold.csv"),      row.names = FALSE)
+# write.csv(cv_delta_summary, file.path(out_dir, "cv_delta_vs_main.csv"), row.names = FALSE)
+# write.csv(cv_by_gsa,        file.path(out_dir, "cv_by_gsa.csv"),        row.names = FALSE)
+# write.csv(cv_oof,           file.path(out_dir, "cv_out_of_fold_predictions.csv"), row.names = FALSE)
 

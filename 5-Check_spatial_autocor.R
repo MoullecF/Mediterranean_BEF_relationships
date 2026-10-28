@@ -1,20 +1,31 @@
-library(nlme)
-library(ape)
-library(dplyr)
-library(tidyr)
-library(writexl)
+# ==============================================================================
+#Residual spatial autocorrelation check of the final sub-models
+#
+#   Refits the six final sub-models (with and without their spatial correlation structure)
+#   and tests residual spatial autocorrelation (Moran's I, inverse-distance weights) for each
+#   year x GSA cell, with Benjamini-Hochberg correction.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
 # 1. Load data and fit models ------------------------------------------------
+
 load("Data/SEM_data_all_GSA.RData")
 
-load("Sub_model_selection/dredged_tric.RData")
-load("Sub_model_selection/dredged_teve.RData")
-load("Sub_model_selection/dredged_fric.RData")
-load("Sub_model_selection/dredged_feve.RData")
-load("Sub_model_selection/dredged_log_cwm_length.RData")
-load("Sub_model_selection/dredged_biomass.RData")
+# load("Sub_model_selection/dredged_tric.RData")
+# load("Sub_model_selection/dredged_teve.RData")
+# load("Sub_model_selection/dredged_fric.RData")
+# load("Sub_model_selection/dredged_feve.RData")
+# load("Sub_model_selection/dredged_log_cwm_length.RData")
+# load("Sub_model_selection/dredged_biomass.RData")
 
 # Prepare the data
 SEM_data <- SEM_data %>%
@@ -101,6 +112,10 @@ m.biomass <- nlme::lme(log_biomass ~
 
 
 ## -----------------------------------------------------------------------------
+# ==============================================================================
+# 2b. Moran's I of the residuals
+# ==============================================================================
+
 ## 1. Final sub-models (with spatial correlation structure)
 ## -----------------------------------------------------------------------------
 models <- list(
@@ -128,10 +143,10 @@ moran_cell <- function(dat, resid_col, y, g, min_n = 10) {
 }
 
 ## -----------------------------------------------------------------------------
-## 3. Moran's I over all cells for one fitted model
+## 3. Moran's I over all groups (gsa x year) for one fitted model
 ## -----------------------------------------------------------------------------
 moran_model <- function(m, label, version) {
-  dat <- nlme::getData(m)                                    # data actually used (NA rows dropped)
+  dat <- nlme::getData(m)                                    
   dat$res <- residuals(m, type = "normalized")
   dat$GSA <- as.character(dat$GSA)
   cells <- unique(dat[, c("year", "GSA")])
@@ -161,7 +176,7 @@ table(moran_cells$model, moran_cells$version)
 
 moran_cells <- moran_cells %>%
   dplyr::group_by(model, version) %>%
-  dplyr::mutate(p_BH = p.adjust(p, method = "BH")) %>%   # BH across cells within each model x version
+  dplyr::mutate(p_BH = p.adjust(p, method = "BH")) %>%   # BH across groups within each model x version
   dplyr::ungroup() %>%
   dplyr::select(model, version, GSA, year, n, I, E, p, p_BH) %>%
   dplyr::arrange(model, version, GSA, year)
@@ -201,7 +216,7 @@ moran_wide <- moran_summary %>%
 ## -----------------------------------------------------------------------------
 ## 6. Export
 ## -----------------------------------------------------------------------------
-write_xlsx(list(cells   = moran_cells,
-                summary = moran_summary,
-                wide    = moran_wide),
-           path = "Sub_model_selection/Moran_I_residuals.xlsx")
+# write_xlsx(list(cells   = moran_cells,
+          #       summary = moran_summary,
+          #       wide    = moran_wide),
+          #  path = "Outputs/Moran_I_residuals.xlsx")

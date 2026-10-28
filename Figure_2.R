@@ -1,6 +1,21 @@
-library(ggplot2)
-library(patchwork)
-library(scico)
+# ==============================================================================
+# Figure 2: Maps of biodiversity and biomass metrics
+#
+#   Maps the biodiversity and biomass metrics at haul level
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
+
+rm(list = ls())
+
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
 
 load("Data/SEM_data_all_GSA.RData")
 
@@ -28,11 +43,8 @@ SEM_data <- SEM_data %>%
   dplyr::mutate(Log_CWM_length = log(CWM_length))
 
 plot_biomass <- ggplot()+
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Log_biomass), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$Log_biomass, na.rm = TRUE), name = "Log Biomass") +
   scale_color_scico(palette = "vik",
                   midpoint = median(SEM_data$Log_biomass, na.rm = TRUE),
                   name = "Log Biomass") +
@@ -40,7 +52,7 @@ plot_biomass <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -51,12 +63,8 @@ plot_biomass <- ggplot()+
   guides(color = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(5, "cm"), barheight = unit(0.4, "cm"))) 
 
 plot_tric <- ggplot()+
-  #geom_point(data = SEM_data, aes(x = longitude, y = latitude, color = Taxonomic_richness), size = 0.2, shape = 21) +
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Taxonomic_richness), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$Taxonomic_richness, na.rm = TRUE), name = "Taxonomic richness") +
   scale_color_scico(palette = "roma",   
                   midpoint = median(SEM_data$Taxonomic_richness, na.rm = TRUE),
                   name = "Taxonomic richness", direction = -1) +
@@ -64,7 +72,7 @@ plot_tric <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -76,12 +84,8 @@ plot_tric <- ggplot()+
   guides(color = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(5, "cm"), barheight = unit(0.4, "cm"))) 
 
 plot_teve <- ggplot()+
-  #geom_point(data = SEM_data, aes(x = longitude, y = latitude, color = Taxonomic_richness), size = 0.2, shape = 21) +
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Taxonomic_evenness), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$Taxonomic_evenness, na.rm = TRUE), name = "Taxonomic evenness") +
   scale_color_scico(palette = "roma",   
                   midpoint = median(SEM_data$Taxonomic_evenness, na.rm = TRUE),
                   name = "Taxonomic evenness", direction = -1) +
@@ -89,7 +93,7 @@ plot_teve <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -100,12 +104,8 @@ plot_teve <- ggplot()+
   guides(color = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(5, "cm"), barheight = unit(0.4, "cm")))
 
 plot_fric <- ggplot()+
-  #geom_point(data = SEM_data, aes(x = longitude, y = latitude, color = Functional_richness), size = 0.2, shape = 21) +
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Functional_richness), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$Functional_richness, na.rm = TRUE), name = "Functional richness") +
   scale_color_scico(palette = "roma",   
                   midpoint = median(SEM_data$Functional_richness, na.rm = TRUE),
                   name = "Functional richness", direction = -1) +
@@ -113,7 +113,7 @@ plot_fric <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -125,12 +125,8 @@ plot_fric <- ggplot()+
   guides(color = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(5, "cm"), barheight = unit(0.4, "cm")))
 
 plot_feve <- ggplot()+
-  #geom_point(data = SEM_data, aes(x = longitude, y = latitude, color = Functional_evenness), size = 0.2, shape = 21) +
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Functional_evenness), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$Functional_evenness, na.rm = TRUE), name = "Functional evenness") +
   scale_color_scico(palette = "roma",   
                   midpoint = median(SEM_data$Functional_evenness, na.rm = TRUE),
                   name = "Functional evenness", direction = -1) +
@@ -138,7 +134,7 @@ plot_feve <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -148,12 +144,8 @@ plot_feve <- ggplot()+
   guides(color = guide_colorbar(title.position = "top", title.hjust = 0.5, barwidth = unit(5, "cm"), barheight = unit(0.4, "cm")))
 
 plot_CWM_length <- ggplot()+
-  #geom_point(data = SEM_data, aes(x = longitude, y = latitude, color = CWM_length), size = 0.2, shape = 21) +
-  # add jitter to points to avoid overplotting
   geom_jitter(data = SEM_data, aes(x = Longitude, y = Latitude, color = Log_CWM_length), width = 0.1, height = 0.1, size = 0.4, shape = 21) +
   geom_sf(data = rnaturalearth::ne_countries(scale = "large", returnclass = "sf"), fill = "grey90", color = "grey20", inherit.aes = FALSE) +
-  # color from blue to red with white in the middle
-  #scale_color_gradient2(low = "blue", mid = "white", high = "red", midpoint = median(SEM_data$CWM_length, na.rm = TRUE), name = "CWM length") +
   scale_color_scico(palette = "roma",   
                   midpoint = median(SEM_data$Log_CWM_length, na.rm = TRUE),
                   name = "Log CWM length", direction = -1) +
@@ -161,7 +153,7 @@ plot_CWM_length <- ggplot()+
   scale_y_continuous(limits = range(SEM_data$Latitude, na.rm = TRUE)+c(-0.5, 0.5)) +
   coord_sf(expand = FALSE) +
   theme_bw(base_size = 12) +
-  theme(legend.position = c(1, 1),   # top-right corner (0-1 scale)
+  theme(legend.position = c(1, 1),   
     legend.direction = "horizontal",
     legend.justification = c("right", "top"),
     legend.background = element_rect(fill = "white", color = "grey50", linewidth = 0.3),
@@ -181,4 +173,4 @@ combined_plot <- combined_plot +
   plot_layout(axes = "collect", axis_titles = "collect") +  
   plot_annotation(tag_levels = "A")
 
-ggsave("Figures/Figure_2.png", plot = combined_plot, width = 16, height = 11, dpi = 300)
+# ggsave("Figures/Figure_2.png", plot = combined_plot, width = 16, height = 11, dpi = 300)

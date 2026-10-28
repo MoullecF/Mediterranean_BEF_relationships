@@ -1,12 +1,23 @@
-# Script to plot trawling positions in each GSA in the Mediterranean Sea
+# ==============================================================================
+# Script: Figure 1: Trawl positions by GSA
+#
+#   Maps the positions of the trawl hauls in each GSA
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
 
 # Load libraries
-library(ggplot2)
-library(dplyr)
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# Load data
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
+
 load("Data/SEM_data_all_GSA.RData")
 
 # Define GSA colors
@@ -46,4 +57,4 @@ haul_labels <- data.frame(
         plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 10))
 
-ggsave("Figures/Figure_1.png", plot = gg_trawling_positions, width = 8, height = 6, dpi = 300)
+# ggsave("Figures/Figure_1.png", plot = gg_trawling_positions, width = 8, height = 6, dpi = 300)

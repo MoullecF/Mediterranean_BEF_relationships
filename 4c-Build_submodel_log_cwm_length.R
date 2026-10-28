@@ -1,18 +1,24 @@
-## =============================================================================
-## Sub-model selection workflow: m.tric
-## piecewiseSEM component — predictor selection + spatial correlation structure
-## =============================================================================
+# ==============================================================================
+# Sub-model selection: log community-weighted maximum length (log_cwm_length)
+#   Selects the predictors and the spatial correlation structure
+#   component: global lme model, spatial autocorrelation (SAC) structure chosen on the full
+#   model, then predictor selection by MuMIn::dredge().
+#
+# WARNING: long-running script (several hours)
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-library(nlme)
-library(MuMIn)
-library(gstat)
-library(ape)
-library(car)
-library(sf)
-library(pbapply)
-library(dplyr)
+# ==============================================================================
+# 2. Data preparation, SAC structure and model selection
+# ==============================================================================
 
 options(na.action = "na.fail")   # required by dredge()
 
@@ -30,7 +36,7 @@ SEM_data <- SEM_data %>%
   mutate(GSA = as.factor(GSA))
 
 # -----------------------------------------------------------------------------
-## STEP -0 Project lon/lat to a planar CRS before doing ANY spatial work
+## STEP 0 - Project lon/lat to a planar CRS
 ## -----------------------------------------------------------------------------
 sf_points <- st_as_sf(SEM_data, coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
 sf_proj   <- st_transform(sf_points, crs = 3035)
@@ -45,7 +51,7 @@ cat("longitude (Easting)  range:", round(range(SEM_data$longitude), 1), "km\n")
 cat("latitude (Northing) range:", round(range(SEM_data$latitude), 1), "km\n")
  
 ## -----------------------------------------------------------------------------
-## STEP 1 — Sanity checks: collinearity among candidate predictors
+## STEP 1 - Sanity checks: collinearity among candidate predictors
 ## -----------------------------------------------------------------------------
  
 predictors <- c("chla_mean", "depth", "FPI_OTB", "FPI_SSF", "gravity",
@@ -68,7 +74,7 @@ vif_check <- lm(as.formula(paste("log_Length_max_cwm ~", paste(predictors, colla
 print(car::vif(vif_check))
  
 ## -----------------------------------------------------------------------------
-## STEP 2 — Fit the FULL predictor model
+## STEP 2 - Fit the FULL predictor model
 ## -----------------------------------------------------------------------------
  
 m.log.cwm.0 <- lme(log_Length_max_cwm ~ chla_mean + depth + FPI_OTB + FPI_SSF + gravity +
@@ -79,7 +85,7 @@ m.log.cwm.0 <- lme(log_Length_max_cwm ~ chla_mean + depth + FPI_OTB + FPI_SSF + 
 summary(m.log.cwm.0)
  
 ## -----------------------------------------------------------------------------
-## STEP 3 — Estimate a starting range value for Step 4, using year x GSA cells
+## STEP 3 - Estimate a starting range value for Step 4, using year x GSA cells
 ## -----------------------------------------------------------------------------
  
 SEM_data$resid_log_cwm_0 <- residuals(m.log.cwm.0, type = "normalized")
@@ -108,7 +114,7 @@ get_cell_variogram <- function(data, year_val, gsa_val, resid_col,
       error = function(e) NULL),
     warning = function(w) {
       fit_converged <<- FALSE
-      invokeRestart("muffleWarning")  # suppress console spam; we track it via fit_converged instead
+      invokeRestart("muffleWarning")  # suppress console spam
     }
   )
  
@@ -132,7 +138,7 @@ cat("\nUsable year x GSA cells for range estimation:", length(cell_variograms),
 cat(n_unconverged, "of those cells had a non-converged or singular variogram fit",
     "(excluded from the range estimate below, kept only as diagnostic info)\n")
  
-## Extract range estimates, but ONLY from cells whose fit actually converged
+## Extract range estimates, but ONLY from groups whose fit actually converged
 range_estimates <- sapply(cell_variograms, function(cv) {
   if (is.null(cv$fit) || !cv$converged) return(NA)
   rng <- cv$fit$range[cv$fit$model == "Exp"]
@@ -152,8 +158,8 @@ if (sum(!is.na(range_estimates)) < 5) {
       "nlme's default correlation-structure initialization in Step 3.\n")
 }
  
-## Optional: median range broken down by GSA alone (converged cells only),
-## in case one region's scale differs notably from the others -- context only
+## Optional: median range broken down by GSA alone
+## in case one region's scale differs notably from the others 
 cat("\nMedian range estimate by GSA, converged cells only (context only):\n")
 range_by_gsa <- tapply(range_estimates,
                         sapply(cell_variograms, function(cv) cv$gsa),
@@ -161,7 +167,7 @@ range_by_gsa <- tapply(range_estimates,
 print(round(range_by_gsa, 2))
  
 ## -----------------------------------------------------------------------------
-## STEP 4 — Choose SAC structure on the FULL model
+## STEP 4 - Choose SAC structure on the FULL model
 ## -----------------------------------------------------------------------------
  
 ## Starting range value from the year x GSA variogram fits above (Step 2)
@@ -170,23 +176,10 @@ if (is.na(start_range)) start_range <- NULL
 cat("\nUsing starting range value for correlation structures:",
     ifelse(is.null(start_range), "nlme default", round(start_range, 2)), "\n")
  
-## Nugget = TRUE throughout: sensible default for irregular point data.
-## `value = c(range, nugget_fraction)` seeds optimization at the Step 2 estimate
-## when available -- helps convergence, especially for corGaus/corRatio.
 init_val <- if (!is.null(start_range)) c(start_range, 0.2) else NULL
  
 spatial_form <- ~longitude + latitude | year/GSA
  
-## IMPORTANT: update() on an lme object re-deparses and re-evaluates the
-## ORIGINAL fitting call later (e.g. when method is switched from ML to REML,
-## or when dredge() refits across fixed-effects subsets), rather than reusing
-## the already-built correlation object. If the correlation structure is built
-## with cor_fun(...)/form/init_val -- names that only exist inside fit_one()'s
-## local scope -- that later re-evaluation fails with "could not find
-## function/object ...", since those names are gone once fit_one() returns.
-## Fix: use bquote() to substitute the ACTUAL function and values into the
-## call before storing it, so the stored call is fully self-contained and
-## safe for update() (and dredge()) to re-run at any later point.
 fit_one <- function(base_model, cor_fun_name, form, use_value, init_value, label) {
   tryCatch({
     if (use_value) {
@@ -207,8 +200,7 @@ fit_one <- function(base_model, cor_fun_name, form, use_value, init_value, label
   })
 }
  
-cor_families <- list(exp = "corExp", gaus = "corGaus", spher = "corSpher",
-                      ratio = "corRatio", lin = "corLin")
+cor_families <- list(exp = "corExp", gaus = "corGaus", spher = "corSpher", ratio = "corRatio", lin = "corLin")
 takes_value  <- list(exp = TRUE,   gaus = TRUE,    spher = TRUE,     ratio = TRUE,     lin = FALSE)
  
 ## Fit each correlation family under year/GSA nesting, on the FULL model
@@ -234,10 +226,7 @@ close(pb)
 ## Drop failed fits
 candidate_models <- candidate_models[!sapply(candidate_models, is.null)]
  
-aic_table <- data.frame(
-  structure = names(candidate_models),
-  AIC = sapply(candidate_models, AIC)
-)
+aic_table <- data.frame(structure = names(candidate_models), AIC = sapply(candidate_models, AIC))
 aic_table <- aic_table[order(aic_table$AIC), ]
 print(aic_table)
  
@@ -251,26 +240,17 @@ if (best_struct_name != "none") {
 m.log.cwm.sac <- candidate_models[[best_struct_name]]
  
 ## -----------------------------------------------------------------------------
-## STEP 4 — Dredge predictors ONCE, under the fixed (winning) SAC structure
+## STEP 4 - Dredge predictors ONCE, under the fixed (winning) SAC structure
 ## -----------------------------------------------------------------------------
-## Single dredge pass -- SAC was already decided in Step 3 on the full model,
-## so there is no need to dredge twice (once naively, once after refitting
-## SAC) as in the earlier version of this workflow.
- 
-## m.log.cwm.sac is already at method = "ML" (inherited from m.log.cwm.0) -- dredge
-## requires ML for fixed-effects comparison, so no refit needed here.
- 
-## NB: this re-estimates spatial correlation parameters for every fixed-effects
-## subset -> slow with 10 predictors. Cap complexity if needed via m.lim.
+# Warning: this step can take several hours to complete !!!!
 dredged.log.cwm <- dredge(m.log.cwm.sac, trace = 2)
 
-save(dredged.log.cwm, file = "Sub_model_selection/dredged_log_cwm_length.RData")
+# save(dredged.log.cwm, file = "Sub_model_selection/dredged_log_cwm_length.RData")
  
 print(head(model.sel(dredged.log.cwm), 10))
 print(sw(dredged.log.cwm))
  
-## Decision: take the top model, or model-average if several models are close
-## (Delta AICc < 2). Inspect first:
+## Decision: take the top model
 top_set <- subset(dredged.log.cwm, delta < 2)
 cat("\nNumber of models within 2 AICc units of the best:", nrow(top_set), "\n")
  
@@ -278,7 +258,7 @@ m.log.cwm.final.ml <- get.models(dredged.log.cwm, subset = 1)[[1]]
 summary(m.log.cwm.final.ml)
  
 ## -----------------------------------------------------------------------------
-## STEP 5 — Finalize with REML + residual diagnostics
+## STEP 5 - Finalize with REML + residual diagnostics
 ## -----------------------------------------------------------------------------
  
 m.log.cwm.final <- update(m.log.cwm.final.ml, method = "REML")
@@ -298,8 +278,6 @@ par(mfrow = c(1, 1))
  
 ## Re-check spatial autocorrelation on FINAL residuals, per year x GSA cell --
 ## this confirms the chosen structure actually removed the autocorrelation
-## found earlier; self-contained (doesn't depend on the Step 2 objects, which
-## were only ever a starting-value aid and are not required for this check)
 SEM_data$resid_log_cwm_final <- residuals(m.log.cwm.final, type = "normalized")
  
 check_cell_autocorr <- function(data, year_val, gsa_val, resid_col) {
@@ -321,9 +299,3 @@ invisible(mapply(check_cell_autocorr,
                   year_val = year_gsa_cells$year,
                   gsa_val  = year_gsa_cells$GSA,
                   MoreArgs = list(data = SEM_data, resid_col = "resid_log_cwm_final")))
- 
-## -----------------------------------------------------------------------------
-## m.log.cwm.final is now ready to enter the pSEM, e.g.:
-##   sem_model <- psem(m.log.cwm.final, m.other.final, ..., data = SEM_data)
-##   summary(sem_model)
-## -----------------------------------------------------------------------------

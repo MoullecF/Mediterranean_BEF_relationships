@@ -1,22 +1,25 @@
-# =========================
-# 1. LOAD PACKAGES
-# =========================
-library(nlme)
-library(ggeffects)
-library(dplyr)
-library(ggplot2)
-library(patchwork)
-library(sf)
+# ==============================================================================
+# Figure S5: Environmental effects on biomass
+#
+#   Refits the biomass model and plots predicted biomass against environmental and anthropogenic predictors.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
+
 load("Data/SEM_data_all_GSA.RData")
 
-# =========================
-# 2. PREPARE DATA
-# =========================
 SEM_data <- SEM_data %>%
-# Add log transformed CWM_length to the dataset
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
   mutate(across(c(log_biomass, fric, feve, tric, teve, Length_max_cwm, log_Length_max_cwm,
                    chla_mean, depth, FPI_OTB, FPI_SSF, gravity,
@@ -31,7 +34,6 @@ proj_coords <- SEM_data %>%
   st_coordinates()
 
 SEM_data[c("longitude", "latitude")] <- proj_coords / 1000
-
 
 data_long <- SEM_data %>%
   select(log_biomass, GSA, sst_mean, sst_sd, so_mean, so_sd, sbt_mean, chla_mean, depth, FPI_OTB, FPI_SSF, gravity) %>%
@@ -68,10 +70,6 @@ pred_sst <- ggpredict(m.biomass, terms = c("sst_mean [all]", "GSA")) %>%
   as.data.frame() %>%
   mutate(metric = "SST mean")
 
-# pred_sst_sd <- ggpredict(m.biomass, terms = c("sst_sd [all]", "GSA")) %>%
-#   as.data.frame() %>%
-#   mutate(metric = "SST variability") 
-
 pred_so <- ggpredict(m.biomass, terms = c("so_mean [all]", "GSA")) %>%
   as.data.frame() %>%
   mutate(metric = "Salinity mean")
@@ -96,14 +94,6 @@ pred_fpi_otb <- ggpredict(m.biomass, terms = c("FPI_OTB [all]", "GSA")) %>%
   as.data.frame() %>%
   mutate(metric = "Fishing pressure (OTB)")
 
-# pred_fpi_ssf <- ggpredict(m.biomass, terms = c("FPI_SSF [all]", "GSA")) %>%
-#   as.data.frame() %>%
-#   mutate(metric = "Fishing pressure (SSF)")
-
-# pred_gravity <- ggpredict(m.biomass, terms = c("gravity [all]", "GSA")) %>%
-#   as.data.frame() %>% 
-#   mutate(metric = "Gravity")
-
 # =========================
 # 5. COMBINE and clean column names
 # =========================
@@ -117,15 +107,12 @@ slopes_all <- as.data.frame(marginaleffects::avg_slopes(m.biomass, variables = c
 
 metric_display_map <- c(
   "sst_mean" = "SST mean",
-  #"sst_sd" = "SST variability",
   "so_mean" = "Salinity mean",
   "so_sd" = "Salinity variability",
   "chla_mean" = "Chlorophyll-a mean",
   "sbt_mean" = "SBT mean",
   "depth" = "Depth",
   "FPI_OTB" = "Fishing pressure (OTB)")
-  #"FPI_SSF" = "Fishing pressure (SSF)",
-  #"gravity" = "Gravity")
 
 gsa_display_map <- c(
   "Catalan_Sea"  = "GSA 6",
@@ -134,9 +121,8 @@ gsa_display_map <- c(
   "Aegean_Sea"   = "GSAs 22-23"
 )
 
-# Order controls bottom-to-top stacking (bottom = line 0)
+# Order 
 gsa_stack_order <- c("Aegean_Sea", "Adriatic_Sea", "Gulf_of_Lion", "Catalan_Sea")
-
 
 label_df <- slopes_all %>%
   group_by(term) %>%
@@ -163,9 +149,8 @@ not_retained_label <- data.frame(
 # =========================
 GSA_colors <- c("Adriatic_Sea" = "#0072B2", "Aegean_Sea" = "#D55E00", "Catalan_Sea" = "#009E73", "Gulf_of_Lion" = "#CC79A7")
 
-figure_S4_2 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GSA)) +
+figure_S5 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GSA)) +
    geom_point(data = data_long, aes(x = value, y = log_biomass, color = GSA),  inherit.aes = FALSE, alpha = 0.08, size = 0.5) +
-# geom_hex(data = data_long, aes(x = value, y = log_biomass), inherit.aes = FALSE, bins = 40, alpha = 0.4) +
   geom_line(linewidth = 1.3) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, color = NA) +
   geom_text(data = label_df, aes(x = Inf, y = -2.5, label = label, color = "black"), hjust = 1.04, size = 3.5, inherit.aes = FALSE, show.legend = FALSE) +
@@ -183,9 +168,8 @@ figure_S4_2 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = 
     scale_color_manual(values = GSA_colors, breaks = c("Catalan_Sea", "Gulf_of_Lion", "Adriatic_Sea", "Aegean_Sea"), labels = c("Northern Spain\n(GSA 6)", "Gulf of Lion\n(GSA 7)", "Adriatic Sea\n(GSAs 17-18)", "Aegean Sea\n(GSAs 22-23)")) +
     scale_fill_manual(values = GSA_colors, breaks = c("Catalan_Sea", "Gulf_of_Lion", "Adriatic_Sea", "Aegean_Sea"), labels = c("Northern Spain\n(GSA 6)", "Gulf of Lion\n(GSA 7)", "Adriatic Sea\n(GSAs 17-18)", "Aegean Sea\n(GSAs 22-23)"))
 
-figure_S4_2
 # =========================
 # 8. EXPORT
 # =========================
-ggsave("Figures/Figure_S5.png", plot = figure_S4_2, width = 7, height = 9, dpi = 300)
+# ggsave("Figures/Figure_S5.png", plot = figure_S5, width = 7, height = 9, dpi = 300)
 

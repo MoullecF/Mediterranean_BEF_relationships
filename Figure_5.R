@@ -1,17 +1,20 @@
-library(ggplot2)
-library(dplyr)
-library(patchwork)
+# ==============================================================================
+# Figure 5: Direct, indirect and total effects
+#
+#   Combined figure of direct, indirect and total effects of predictors and biodiversity on biomass.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# Combined figure of Figure_5.R and Figure_6.R (shared indirect-effects panel shown once):
-#   A: direct effects of environmental and anthropogenic predictors (Figure 6, panel A)
-#   B: direct effects of biodiversity (Figure 5, panel A)
-#   C: indirect effects of predictors (Figures 5 and 6, panel B)
-#   D: total effects of environmental and anthropogenic predictors (Figure 6, panel C)
-#   E: total effects of biodiversity (Figure 5, panel C)
-
 # Load necessary data and functions
+
 load("Tools/extract_direct_effects_function.RData")
 load("Tools/compute_indirect_effects_GSA_decomp_function.RData")
 load("Tools/compute_total_effects_GSA_function.RData")
@@ -21,7 +24,6 @@ load("Outputs/SEM_model_ALL_GSA.RData")
 load("Data/SEM_data_all_GSA.RData")
 
 SEM_data <- SEM_data %>%
-# Add log transformed CWM_length to the dataset
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
   mutate(across(c(log_biomass, fric, feve, tric, teve, Length_max_cwm, log_Length_max_cwm,
                    chla_mean, depth, FPI_OTB, FPI_SSF, gravity,
@@ -285,4 +287,4 @@ figure_5_6 <- (plot_A / plot_B / plot_C / plot_D / plot_E) +
   theme(plot.tag = element_text(face = "bold", size = tag_text_size))
 
 # Save
-ggsave("Figures/Figure_5.png", plot = figure_5_6, width = 18.5, height = 27, dpi = 300)
+# ggsave("Figures/Figure_5.png", plot = figure_5_6, width = 18.5, height = 27, dpi = 300)

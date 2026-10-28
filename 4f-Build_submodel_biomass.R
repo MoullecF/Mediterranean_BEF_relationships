@@ -1,30 +1,24 @@
-## =============================================================================
-## Sub-model selection workflow: m.biomass
-## piecewiseSEM component — predictor selection + spatial correlation structure
-##
-## DIFFERENCES FROM m.cwm / m.tric:
-## - GSA is a genuine interaction term here (trait variables x GSA), not just
-##   a spatial grouping factor. It must appear in the model formula itself.
-## - Trait variables (fric, Length_max_cwm, teve, tric, feve) and their GSA
-##   interactions represent specific hypothesized SEM causal paths and are
-##   kept FIXED in every candidate model during dredge() -- only the 10
-##   environmental predictors are dredged. This is dredge()'s `fixed =`
-##   argument, not a marginality/subset rule, since these terms are never
-##   dropped regardless of AICc.
-## - Spatial correlation still uses | year/GSA nesting, same rationale as the
-##   other sub-models (4 distinct Mediterranean sub-basins).
-## =============================================================================
+# ==============================================================================
+# Sub-model selection: log fish biomass (biomass)
+#   Selects the predictors and the spatial correlation structure
+#   component: global lme model, spatial autocorrelation (SAC) structure chosen on the full
+#   model, then predictor selection by MuMIn::dredge().
+#
+# WARNING: long-running script (several hours)
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-library(nlme)
-library(MuMIn)
-library(gstat)
-library(ape)
-library(car)
-library(sf)
-library(pbapply)
-library(dplyr)
+# ==============================================================================
+# 2. Data preparation, SAC structure and model selection
+# ==============================================================================
 
 options(na.action = "na.fail")   # required by dredge()
 
@@ -42,7 +36,7 @@ SEM_data <- SEM_data %>%
   mutate(GSA = as.factor(GSA))
 
 ## -----------------------------------------------------------------------------
-## STEP 0 — Project lon/lat to a planar CRS before doing ANY spatial work
+## STEP 0 - Project lon/lat to a planar CRS
 ## -----------------------------------------------------------------------------
 sf_points <- st_as_sf(SEM_data, coords = c("longitude", "latitude"), crs = 4326, remove = FALSE)
 sf_proj   <- st_transform(sf_points, crs = 3035)
@@ -57,12 +51,8 @@ cat("longitude (Easting)  range:", round(range(SEM_data$longitude), 1), "km\n")
 cat("latitude (Northing) range:", round(range(SEM_data$latitude), 1), "km\n")
 
 ## -----------------------------------------------------------------------------
-## STEP 1 — Sanity checks: collinearity among candidate (environmental) predictors
+## STEP 1 - Sanity checks: collinearity among candidate (environmental) predictors
 ## -----------------------------------------------------------------------------
-## NB: only the environmental predictors are checked here, since the trait
-## variables and their GSA interactions are fixed terms, not part of the
-## dredge search -- collinearity among them doesn't affect model SELECTION,
-## though it's still worth being aware of for interpreting coefficients.
 
 predictors <- c("chla_mean", "depth", "FPI_OTB", "FPI_SSF", "gravity",
                 "sbt_mean", "so_mean", "so_sd", "sst_mean", "sst_sd",
@@ -80,23 +70,12 @@ if (nrow(high_cor) > 0) {
   cat("\nNo predictor pairs exceed |r| = 0.7\n")
 }
 
-# VIF check on environmental predictors only (plain additive check -- see
-# the GVIF note below for the full model including interactions)
 vif_check <- lm(as.formula(paste("log_biomass ~", paste(predictors, collapse = " + "))),
                  data = SEM_data)
 print(car::vif(vif_check))
 
-## >>> NOTE: the FULL model (below) includes (fric + Length_max_cwm + teve +
-## tric + feve) * GSA interaction terms. Ordinary VIF on individual dummy-coded
-## interaction terms is misleading -- use GVIF instead, which car::vif()
-## computes automatically when a model contains factors/interactions:
-##   car::vif(m.biomass.0)
-## Inspect this after Step 2 fits the full model, and look at the
-## GVIF^(1/(2*Df)) column (comparable across terms with different df) rather
-## than the raw GVIF column.
-
 ## -----------------------------------------------------------------------------
-## STEP 2 — Fit the FULL model (all environmental predictors + fixed trait x
+## STEP 2 - Fit the FULL model (all environmental predictors + fixed trait x
 ## GSA interaction terms), ML, no spatial correlation yet
 ## -----------------------------------------------------------------------------
 
@@ -110,7 +89,7 @@ m.biomass.0 <- lme(
 summary(m.biomass.0)
 
 ## -----------------------------------------------------------------------------
-## STEP 3 — Estimate a starting range value for Step 4, using year x GSA cells
+## STEP 3 - Estimate a starting range value for Step 4, using year x GSA cells
 ## -----------------------------------------------------------------------------
 
 SEM_data$resid_biomass_0 <- residuals(m.biomass.0, type = "normalized")
@@ -189,7 +168,7 @@ range_by_gsa <- tapply(range_estimates,
 print(round(range_by_gsa, 2))
 
 ## -----------------------------------------------------------------------------
-## STEP 4 — Choose SAC structure on the FULL model (before any dredging)
+## STEP 4 - Choose SAC structure on the FULL model (before any dredging)
 ## -----------------------------------------------------------------------------
 
 start_range <- if (exists("range_estimates")) median(range_estimates, na.rm = TRUE) else NA
@@ -201,10 +180,6 @@ init_val <- if (!is.null(start_range)) c(start_range, 0.2) else NULL
 
 spatial_form <- ~longitude + latitude | year/GSA
 
-## See earlier models for why bquote() is used here: it makes the stored
-## correlation call self-contained so later update()/dredge() re-evaluation
-## (e.g. ML -> REML, or refitting across dredge's fixed-effects subsets)
-## doesn't fail trying to resolve fit_one()'s local argument names.
 fit_one <- function(base_model, cor_fun_name, form, use_value, init_value, label) {
   tryCatch({
     if (use_value) {
@@ -224,8 +199,7 @@ fit_one <- function(base_model, cor_fun_name, form, use_value, init_value, label
   })
 }
 
-cor_families <- list(exp = "corExp", gaus = "corGaus", spher = "corSpher",
-                      ratio = "corRatio", lin = "corLin")
+cor_families <- list(exp = "corExp", gaus = "corGaus", spher = "corSpher", ratio = "corRatio", lin = "corLin")
 takes_value  <- list(exp = TRUE,   gaus = TRUE,    spher = TRUE,     ratio = TRUE,     lin = FALSE)
 
 candidate_models <- list(none = m.biomass.0)
@@ -249,10 +223,7 @@ close(pb)
 
 candidate_models <- candidate_models[!sapply(candidate_models, is.null)]
 
-aic_table <- data.frame(
-  structure = names(candidate_models),
-  AIC = sapply(candidate_models, AIC)
-)
+aic_table <- data.frame(structure = names(candidate_models), AIC = sapply(candidate_models, AIC))
 aic_table <- aic_table[order(aic_table$AIC), ]
 print(aic_table)
 
@@ -265,31 +236,22 @@ if (best_struct_name != "none") {
 m.biomass.sac <- candidate_models[[best_struct_name]]
 
 ## -----------------------------------------------------------------------------
-## STEP 5 — Dredge the ENVIRONMENTAL predictors only, under the fixed SAC
+## STEP 5 - Dredge the ENVIRONMENTAL predictors only, under the fixed SAC
 ## structure. Trait variables and their GSA interactions stay in every
-## candidate model via dredge()'s `fixed =` argument.
+## candidate model via dredge() fixed argument
 ## -----------------------------------------------------------------------------
-## m.biomass.sac is already at method = "ML" -- dredge requires ML.
-##
-## `fixed =` tells dredge() these terms are never dropped, regardless of
-## AICc -- this is the right mechanism here because these terms represent
-## specific hypothesized SEM causal paths (fric -> biomass, tric -> biomass,
-## etc.), not candidates to be selected in or out by fit statistics alone.
-## This also keeps the search space to the 10 environmental predictors
-## (2^10 = 1024 submodels), same order of magnitude as m.cwm/m.tric, rather
-## than exploding combinatorially across the trait x GSA interaction terms.
 
 tl <- attr(terms(m.biomass.sac), "term.labels")
-print(tl)  # inspect, then copy the 5 interaction terms exactly as shown
+print(tl)
 
 fixed_terms <- c("fric", "log_Length_max_cwm", "teve", "tric", "feve", "GSA",
                   tl[grepl("GSA", tl) & grepl("fric|log_Length_max_cwm|teve|tric|feve", tl)])
 
 fixed_terms_formula <- as.formula(paste("~", paste(fixed_terms, collapse = " + ")))
 
-dredged.biomass <- dredge(m.biomass.sac, fixed = fixed_terms_formula, trace = 2)                                                                                                                                                                                                                                                                                                                                                                           save(dredged.biomass, file = "Sub_model_selection/dredged_biomass.RData")
-
-save(dredged.biomass, file = "Sub_model_selection/dredged_biomass.RData")
+# Warning: this step can take several hours to complete !!!!
+dredged.biomass <- dredge(m.biomass.sac, fixed = fixed_terms_formula, trace = 2)
+# save(dredged.biomass, file = "Sub_model_selection/dredged_biomass.RData")
 
 print(head(model.sel(dredged.biomass), 10))
 print(sw(dredged.biomass))
@@ -302,7 +264,7 @@ m.biomass.final.ml <- get.models(dredged.biomass, subset = 1)[[1]]
 summary(m.biomass.final.ml)
 
 ## -----------------------------------------------------------------------------
-## STEP 6 — Finalize with REML + residual diagnostics
+## STEP 6 - Finalize with REML + residual diagnostics
 ## -----------------------------------------------------------------------------
 
 m.biomass.final <- update(m.biomass.final.ml, method = "REML")
@@ -340,8 +302,3 @@ invisible(mapply(check_cell_autocorr,
                   year_val = year_gsa_cells$year,
                   gsa_val  = year_gsa_cells$GSA,
                   MoreArgs = list(data = SEM_data, resid_col = "resid_biomass_final")))
-
-## -----------------------------------------------------------------------------
-## m.biomass.final is now ready to enter the pSEM, e.g.:
-##   sem_model <- psem(m.biomass.final, m.cwm.final, m.tric.final, ..., data = SEM_data)
-                                                                                                           

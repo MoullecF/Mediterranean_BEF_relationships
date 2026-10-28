@@ -1,11 +1,21 @@
+# ==============================================================================
+# Compute taxonomic, functional and trait-based diversity per haul
+#
+# Note: Functional diversity (alpha.fd.multidim) is computationally intensive
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+# Load libraries
+source("./0-Load libraries.R")
 
 rm(list = ls())
 
-# Library
-load("Tools/install_load_function.RData")
-
-# Install/load required packages
-install_load_function(c("dplyr", "tidyr", "ggplot2", "vegan", "tibble", "GGally", "mFD", "BAT", "modi", "janitor", "sf", "rnaturalearth", "funrar"))
+# ==============================================================================
+# 2. Load data and define the community
+# ==============================================================================
 
 # Load data
 data <- get(load("Data/MEDITS_data_6_7_17_18_22_23.RData")) ; names(data)
@@ -23,10 +33,14 @@ community <- data %>%
 
 # Check data
 length(unique(community$haul_id))      
-length(unique(community$taxon)) # 331 species   
+length(unique(community$taxon)) 
 
 # Save filtered community data
-save(community, file = paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(community, file = paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+
+# ==============================================================================
+# 3. Taxonomic diversity
+# ==============================================================================
 
 # Taxonomic diversity
 community <- get(load(paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData")))
@@ -41,7 +55,7 @@ taxonomic_diversity <- community %>%
 # Identify hauls with taxonomic richness = 1 and remove them from the taxonomic diversity dataset (since evenness is undefined for richness = 1)
 hauls_richness_1 <- taxonomic_diversity %>%
   filter(tric == 1) %>%
-  pull(haul_id) # 6 hauls removed on the whole study area
+  pull(haul_id)
 
 # Remove hauls with taxonomic richness = 1 from the taxonomic diversity dataset and community dataset (since they will be excluded from the functional diversity analysis as well)
 taxonomic_diversity <- taxonomic_diversity %>%
@@ -51,8 +65,12 @@ community <- community %>%
   filter(!haul_id %in% hauls_richness_1)
 
 # Save
-save(taxonomic_diversity, file = paste0("Outputs/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(taxonomic_diversity, file = paste0("Outputs/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
   
+# ==============================================================================
+# 4. Functional diversity
+# ==============================================================================
+
 # Functional diversity
 traits <- get(load("Data/MEDITS_fish_traits.RData"))
 
@@ -74,14 +92,13 @@ n_hauls_fewer_than_3 <- community %>%
   summarize(n_species = n_distinct(taxon)) %>%
   filter(n_species < 3) %>%
   nrow()
-# 2 hauls with fewer than 3 species on 11117
 
 # Species matrix
 sm <- community %>% 
   dplyr::select(haul_id, taxon = taxon, count = wgt_cpua) %>%
   spread(taxon, count) %>%                        
   filter(rowSums(!is.na(.)) > 2) %>%  # Prior to analyses, we excluded hauls with less than three species because these might lead to uninformative trait spaces (Mammola et al., 2024)
-  mutate(across(everything(), ~ replace_na(., 0))) %>% # NAs are actually 0s
+  mutate(across(everything(), ~ replace_na(., 0))) %>% 
   column_to_rownames(var = "haul_id")
 
 # Traits matrix
@@ -140,7 +157,7 @@ fspace_axes <- select_axes_broken_stick(pc_eigenvalues = fspaces_quality_fish$de
 
 # Functional alpha diversity indices in a multidimensional space
 # number of dimensions of the functional space to include in the analysis
-n_dimensions <- 4 # fspace_axes$n_axes
+n_dimensions <- 4 # or fspace_axes$n_axes
 
 s <- sm %>% filter(rowSums(. > 0, na.rm = TRUE) > n_dimensions) %>% # convex hull requirement
   as.matrix() 
@@ -148,20 +165,18 @@ s <- sm %>% filter(rowSums(. > 0, na.rm = TRUE) > n_dimensions) %>% # convex hul
 # compute relative abundance of each species 
 s_rel <- funrar::make_relative(as.matrix(s))
 
-# Compute functional diversity indices in a multidimensional space.
-# Warning: the function alpha.fd.multidim() is computationally intensive and may take a long time to run depending on the number of hauls and species in the dataset
+# Compute functional diversity indices in a multidimensional space
+# NOTE: mFD::alpha.fd.multidim() is computationally intensive and may take a long time to run. Do not rerun it
+# use the saved Outputs/functional_diversity_GSA_*.RData
 alpha_fd_indices_fish <- mFD::alpha.fd.multidim(
   sp_faxes_coord = sp_faxes_coord_fish[ , paste0("PC", 1:n_dimensions)],
   asb_sp_w = s, ind_vect = c("feve", "fric", "fdis", "fmpd", "fnnd", "fdiv", "fori", "fspe", "fide"),
   scaling = TRUE, check_input = TRUE, details_returned = TRUE)
 
-# Functional redundancy index (as in  Ricotta & Szeidl (2009))
+# Functional redundancy index
 functio_diversity <-alpha.fd.hill(asb_sp_w = s_rel, sp_dist = sp_dist_fish, q = c(1,2), tau = "mean")
 summary(functio_diversity$asb_FD_Hill)
 functio_q1 <- functio_diversity$asb_FD_Hill[,1]
-
-# Functional redundancy
-# computed following Dick 2023 (relative redundancy is the Ricotta method)
 taxo_q1 <- exp(vegan::diversity(s_rel))
 functio_redund_q1 <- 1-(functio_q1/taxo_q1)
 
@@ -173,7 +188,11 @@ functional_diversity <- alpha_fd_indices_fish$functional_diversity_indices %>%
   left_join(tibble::enframe(functio_redund_q1, name = "haul_id", value = "fredund"), by = "haul_id")
 
 # Save
-save(functional_diversity, file = paste0("Outputs/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(functional_diversity, file = paste0("Outputs/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+
+# ==============================================================================
+# 5. Community-weighted and trophic metrics
+# ==============================================================================
 
 ### Community weighted metrics and trophic metrics ----
 # Community weighted mean and variance of selected continuous traits
@@ -205,7 +224,7 @@ feeding <- community %>%
 other_diversity_metrics <- left_join(weighted_metrics, feeding, by = "haul_id")
 
 # Save
-save(other_diversity_metrics, file = paste0("Outputs/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(other_diversity_metrics, file = paste0("Outputs/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # Join all metrics
 # Load data
@@ -223,4 +242,4 @@ diversity <- taxonomic_diversity %>%
   left_join(other_diversity_metrics %>% filter(haul_id %in% common_hauls), by = "haul_id")
 
 # Save
-save(diversity, file = paste0("Outputs/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(diversity, file = paste0("Outputs/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))

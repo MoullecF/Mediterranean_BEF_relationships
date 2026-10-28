@@ -1,12 +1,21 @@
-# =========================
-# 1. LOAD PACKAGES
-# =========================
-library(nlme)
-library(ggeffects)
-library(dplyr)
-library(ggplot2)
-library(patchwork)
-library(tidyr)
+# ==============================================================================
+# Figure 4: Biomass-biodiversity relationships
+#
+#   Refits the biomass model and plots predicted biomass against biodiversity metrics, with slopes by GSA.
+#
+# ==============================================================================
+
+# ==============================================================================
+# 1. Load libraries and prepare the environment
+# ==============================================================================
+
+source("./0-Load libraries.R")
+
+rm(list = ls())
+
+# ==============================================================================
+# 2. Load and prepare data
+# ==============================================================================
 
 load("Data/SEM_data_all_GSA.RData")
 
@@ -14,7 +23,6 @@ load("Data/SEM_data_all_GSA.RData")
 # 2. PREPARE DATA
 # =========================
 SEM_data <- SEM_data %>%
-# Add log transformed CWM_length to the dataset
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
   mutate(across(c(log_biomass, fric, feve, tric, teve, Length_max_cwm, log_Length_max_cwm,
                    chla_mean, depth, FPI_OTB, FPI_SSF, gravity,
@@ -147,7 +155,6 @@ GSA_colors <- c("Adriatic_Sea" = "#0072B2", "Aegean_Sea" = "#D55E00", "Catalan_S
 
 figure_4 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GSA)) +
    geom_point(data = data_long, aes(x = value, y = log_biomass, color = GSA),  inherit.aes = FALSE, alpha = 0.08, size = 0.5) +
-# geom_hex(data = data_long, aes(x = value, y = log_biomass), inherit.aes = FALSE, bins = 40, alpha = 0.4) +
   geom_line(linewidth = 1.3) +
   geom_ribbon(aes(ymin = lower, ymax = upper), alpha = 0.2, color = NA) +
   geom_text(data = label_df, aes(x = Inf, y = -Inf, label = label, color = GSA, vjust = vjust_val), hjust = 1.04, size = 2.5, inherit.aes = FALSE, show.legend = FALSE) +
@@ -167,5 +174,5 @@ figure_4 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GSA
 # =========================
 # 8. EXPORT
 # =========================
-ggsave("Figures/Figure_4.png", plot = figure_4, width = 8, height = 8, dpi = 300)
+# ggsave("Figures/Figure_4.png", plot = figure_4, width = 8, height = 8, dpi = 300)
 
