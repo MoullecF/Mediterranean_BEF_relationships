@@ -80,7 +80,10 @@ Figure scripts (`Figure_*.R`) are run individually once the required inputs exis
 - `4a-` to `4f-`: sub-model selection per response variable.
 - `5-` to `8-`: residual checks, SEM, sensitivity analyses and summary statistics.
 - `Figure_*.R`: main and supplementary figures.
-- [Data/](Data), [Tools/](Tools), [Outputs/](Outputs), [Figures/](Figures): inputs, helper functions, saved outputs and figures.
+[:file\_folder: **Tools**](Data/):Helper functions
+[:file\_folder: **Data**](Data/):Input data
+[:file\_folder: **Outputs**](Outputs/):Saved outputs
+[:file\_folder: **Figures**](Figures/):Saved figures
 
 ## Computational Notes
 - Scripts `4a`–`4f` call `MuMIn::dredge()` on a large candidate set while re-estimating spatial correlation parameters for each candidate; each script can take **several hours** (`4b` runs in parallel on all but one core). They are not needed to reproduce the SEM (script 6 uses hard-coded final formulas) or the figures.
