@@ -40,4 +40,4 @@ p <- ggplot(r2_long, aes(x = Response, y = R2, fill = Component)) +
   theme(legend.position = c(0.80, 0.85))
 
 # Save figure
-ggsave("Figures/Figure_3_rsquared.png", plot = p, width = 9, height = 4.5, dpi = 300)
+ggsave("Figures/Figure_3.png", plot = p, width = 9, height = 4.5, dpi = 300)

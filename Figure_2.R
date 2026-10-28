@@ -181,4 +181,4 @@ combined_plot <- combined_plot +
   plot_layout(axes = "collect", axis_titles = "collect") +  
   plot_annotation(tag_levels = "A")
 
-ggsave("Figures/Figure_2_haul_metrics.png", plot = combined_plot, width = 16, height = 11, dpi = 300)
+ggsave("Figures/Figure_2.png", plot = combined_plot, width = 16, height = 11, dpi = 300)

@@ -167,5 +167,5 @@ figure_4 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GSA
 # =========================
 # 8. EXPORT
 # =========================
-ggsave("Figures/Figure_4_biomass_vs_predictors.png", plot = figure_4, width = 8, height = 8, dpi = 300)
+ggsave("Figures/Figure_4.png", plot = figure_4, width = 8, height = 8, dpi = 300)
 

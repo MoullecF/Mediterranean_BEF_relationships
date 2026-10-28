@@ -149,4 +149,4 @@ slope_plot <- ggplot(slope_comparisons_me, aes(x = contrast_final, y = metric, f
   theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title = element_text(face = "bold", size = 11)) +
   labs(x = "GSA comparison", y = "Biodiversity metrics", title = "Pairwise differences between GSA slopes")
 
-ggsave("Figures/Figure_6_Slope_comparisons.png", plot = slope_plot, width = 6, height = 4, dpi = 300)
+ggsave("Figures/Figure_6.png", plot = slope_plot, width = 6, height = 4, dpi = 300)
