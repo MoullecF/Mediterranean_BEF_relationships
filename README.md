@@ -1,4 +1,4 @@
-# Biodiversity–ecosystem functioning relationships in Mediterranean demersal fish communities
+# Biodiversity-ecosystem functioning relationships in Mediterranean fish communities
 
 This repository contains the R code used to investigate biodiversity-ecosystem functioning (BEF) relationships in fish communities across four northern Mediterranean sub-regions: Northern Spain, the Gulf of Lion, the Adriatic Sea and the Aegean Sea. It analyses 23 years (1999–2021) of Mediterranean International Trawl Survey (MEDITS) data (10,034 hauls, 331 species) with piecewise structural equation modelling, relating environmental conditions and anthropogenic pressures to taxonomic diversity, functional diversity, community-weighted maximum body length and fish biomass. Fish biomass is treated as a biomass-related proxy for ecosystem functioning.
 
