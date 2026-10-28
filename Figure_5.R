@@ -285,4 +285,4 @@ figure_5_6 <- (plot_A / plot_B / plot_C / plot_D / plot_E) +
   theme(plot.tag = element_text(face = "bold", size = tag_text_size))
 
 # Save
-ggsave("Figures/Figure_5_6_combined_effects.png", plot = figure_5_6, width = 18.5, height = 27, dpi = 300)
+ggsave("Figures/Figure_5.png", plot = figure_5_6, width = 18.5, height = 27, dpi = 300)
