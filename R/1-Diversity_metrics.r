@@ -113,7 +113,7 @@ all(sort(rownames(tm)) == sort(colnames(sm)))
 # List of traits included in the analysis
 colnames(tm)
 
-# Check collinearity among all traits and Variance Inflation Factor (VIF)
+# Check collinearity among all traits
 df_cor <- tm[, which(sapply(tm, is.numeric))]
 psych::pairs.panels(df_cor, stars = TRUE, method = "spearman", hist.col = "lightblue", density = TRUE, ellipses = TRUE)
 
