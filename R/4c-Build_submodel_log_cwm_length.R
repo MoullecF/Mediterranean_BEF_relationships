@@ -245,7 +245,8 @@ m.log.cwm.sac <- candidate_models[[best_struct_name]]
 # Warning: this step can take several hours to complete !!!!
 dredged.log.cwm <- dredge(m.log.cwm.sac, trace = 2)
 
-# save(dredged.log.cwm, file = "Sub_model_selection/dredged_log_cwm_length.RData")
+# dir.create(here::here("Outputs/Sub_model_selection"), showWarnings = FALSE, recursive = TRUE)
+# save(dredged.log.cwm, file = here::here("Outputs/Sub_model_selection/dredged_log_cwm_length.RData"))
  
 print(head(model.sel(dredged.log.cwm), 10))
 print(sw(dredged.log.cwm))

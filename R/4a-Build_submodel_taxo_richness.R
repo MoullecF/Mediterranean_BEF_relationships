@@ -245,7 +245,8 @@ m.tric.sac <- candidate_models[[best_struct_name]]
 # Warning: this step can take several hours to complete !!!!
 dredged.tric <- dredge(m.tric.sac, trace = 2)
 
-# save(dredged.tric, file = "Sub_model_selection/dredged_tric.RData")
+# dir.create(here::here("Outputs/Sub_model_selection"), showWarnings = FALSE, recursive = TRUE)
+# save(dredged.tric, file = here::here("Outputs/Sub_model_selection/dredged_tric.RData"))
  
 print(head(model.sel(dredged.tric), 10))
 print(sw(dredged.tric))

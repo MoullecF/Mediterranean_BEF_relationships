@@ -20,12 +20,12 @@ rm(list = ls())
 
 load(here::here("Data/SEM_data_all_GSA.RData"))
 
-# load("Sub_model_selection/dredged_tric.RData")
-# load("Sub_model_selection/dredged_teve.RData")
-# load("Sub_model_selection/dredged_fric.RData")
-# load("Sub_model_selection/dredged_feve.RData")
-# load("Sub_model_selection/dredged_log_cwm_length.RData")
-# load("Sub_model_selection/dredged_biomass.RData")
+# load(here::here("Outputs/Sub_model_selection/dredged_tric.RData"))
+# load(here::here("Outputs/Sub_model_selection/dredged_teve.RData"))
+# load(here::here("Outputs/Sub_model_selection/dredged_fric.RData"))
+# load(here::here("Outputs/Sub_model_selection/dredged_feve.RData"))
+# load(here::here("Outputs/Sub_model_selection/dredged_log_cwm_length.RData"))
+# load(here::here("Outputs/Sub_model_selection/dredged_biomass.RData"))
 
 # Prepare the data
 SEM_data <- SEM_data %>%

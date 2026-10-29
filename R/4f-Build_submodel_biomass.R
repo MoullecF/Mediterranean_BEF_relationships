@@ -251,7 +251,8 @@ fixed_terms_formula <- as.formula(paste("~", paste(fixed_terms, collapse = " + "
 
 # Warning: this step can take several hours to complete !!!!
 dredged.biomass <- dredge(m.biomass.sac, fixed = fixed_terms_formula, trace = 2)
-# save(dredged.biomass, file = "Sub_model_selection/dredged_biomass.RData")
+# dir.create(here::here("Outputs/Sub_model_selection"), showWarnings = FALSE, recursive = TRUE)
+# save(dredged.biomass, file = here::here("Outputs/Sub_model_selection/dredged_biomass.RData"))
 
 print(head(model.sel(dredged.biomass), 10))
 print(sw(dredged.biomass))

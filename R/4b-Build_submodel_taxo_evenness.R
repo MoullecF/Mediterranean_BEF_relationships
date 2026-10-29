@@ -245,7 +245,8 @@ m.teve.sac <- candidate_models[[best_struct_name]]
 # Warning: this step can take several hours to complete !!!!
 
 dredged.teve <- dredge(m.teve.sac, trace = 2)
-# save(dredged.teve, file = "Sub_model_selection/dredged_teve.RData")
+# dir.create(here::here("Outputs/Sub_model_selection"), showWarnings = FALSE, recursive = TRUE)
+# save(dredged.teve, file = here::here("Outputs/Sub_model_selection/dredged_teve.RData"))
  
 print(head(model.sel(dredged.teve), 10))
 print(sw(dredged.teve))

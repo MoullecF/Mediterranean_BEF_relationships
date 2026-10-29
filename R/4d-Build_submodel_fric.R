@@ -257,7 +257,8 @@ fixed_terms_formula <- as.formula(paste("~", paste(fixed_terms, collapse = " + "
 # Warning: this step can take several hours to complete !!!!
 dredged.fric <- dredge(m.fric.sac, fixed = fixed_terms_formula, trace = 2)
 
-# save(dredged.fric, file = "Sub_model_selection/dredged_fric.RData")
+# dir.create(here::here("Outputs/Sub_model_selection"), showWarnings = FALSE, recursive = TRUE)
+# save(dredged.fric, file = here::here("Outputs/Sub_model_selection/dredged_fric.RData"))
 
 print(head(model.sel(dredged.fric), 10))
 print(sw(dredged.fric))
