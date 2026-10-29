@@ -11,10 +11,7 @@ source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
-# Helper functions (external to the repository; the first path is outside the project folder)
 load(here::here("Tools/make_correlation_plot_function.RData"))
-source("~/Scripts R/Divers/Variance_Inflation_Factor.R")
-load(here::here("Tools/corvif_function.RData"))
 
 # ==============================================================================
 # 2. Load and merge data
@@ -68,6 +65,7 @@ data <- data %>%
 if (any(duplicated(data$coords_key))) {
   message(paste0("There are ", sum(duplicated(data$coords_key)), " duplicate coordinates."))
   message("[Spatial] Duplicate coordinates detected — applying small jitter (1e-5 degrees).")
+
 # Add very small jitter to duplicate coordinates
   data <- data %>%
     group_by(coords_key) %>%
@@ -98,7 +96,7 @@ print(quantile(data$Biomass, probs = seq(0, 1, 0.0005)))
 
 # Remove biomass outliers, log-transform chla_mean and remove hauls with CWM of max length > 250 cm (as only one rare species is driving the index (HEXAGRI))
 data <- data %>%
-  filter(Biomass > 15 & Biomass < 5700) %>% # removed 0.5% of lowest and highest values (1% in total), 10035 hauls remaining
+  filter(Biomass > 15 & Biomass < 5700) %>% # removed 0.5% of lowest and highest values (1% in total)
   mutate(log_chla_mean = log(chla_mean)) %>%
   filter(Length_max_cwm <= 250)
 
@@ -126,7 +124,7 @@ df_cor1 = data[, c("tric", "teve", "feve", "fric",
                   "so_sd", "chla_mean", "FPI_OTB", "FPI_PS", "FPI_SSF", "gravity")]
 
 cor1 <- make_correlation_plot(df_cor = df_cor1, threshold = 0.7, method = "pearson") 
-usdm::vifstep(as.data.frame(df_cor1), th=5, keep= c("log_biomass")) # keep log_biomass as it is the response variable
+usdm::vifstep(as.data.frame(df_cor1), th=5, keep= c("log_biomass"), size = 10100) # keep log_biomass as it is the response variable
 
 #  sbt_sd and FPI_PS removed
 df_cor2 = data[, c("tric", "teve", "feve", "fric", "Length_max_cwm", "log_biomass",
@@ -135,7 +133,8 @@ df_cor2 = data[, c("tric", "teve", "feve", "fric", "Length_max_cwm", "log_biomas
 
 
 corr_fig <- ggcorrplot(cor(df_cor2), type = "lower", lab = TRUE, method="circle", colors = c("red", "white", "blue"), digits = 2, legend.title = "Pearson\nCorrelation", ggtheme=theme_bw())
-usdm::vifstep(as.data.frame(df_cor2), th=5, keep= c("log_biomass")) # keep log_biomass as it is the response variable
+usdm::vifstep(as.data.frame(df_cor2), th=5, keep= c("log_biomass"), size = 10100) # keep log_biomass as it is the response variable
+# No variable from the 16 input variables has collinearity problem. 
 
 # ==============================================================================
 # 4. Build and save the SEM dataset
