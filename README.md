@@ -25,9 +25,8 @@ All figures can be regenerated directly from the provided outputs, without rerun
 
 ## Inputs and Data ![data](https://img.shields.io/badge/-data-283593?style=flat-square)
 - [Data/](Data): MEDITS survey data (`MEDITS_data_6_7_17_18_22_23.RData`), species traits (`MEDITS_fish_traits.RData`), and the intermediate objects `community_GSA_*.RData` and `SEM_data_all_GSA.RData`. For the MEDITS data cleaning and consistency checks, see [COISPA/RoME](https://github.com/COISPA/RoME), an R package for checking MEDITS survey data.
-- [Data/Environment/](Data/Environment): environmental covariates (`environmental_data_GSA_*.RData`). Script 2 additionally expects Copernicus `.nc` downloads, `FPI_*_stack.RData` and `r_gravity_Med.RData`, which are **not present** in the repository.
-- [Tools/](Tools): saved helper functions (`.RData`) used by scripts 1-3 and Figure 5. Present: the three effect-computation helpers used by `Figure_5.R`, `plot_env_na` and `select_axes_broken_stick_function`; the other helpers loaded by scripts 1-3 are missing.
-- Script 2 requires a Copernicus Marine account and a Python environment (via `reticulate`); credentials must be supplied by the user in place of the placeholders in the script.
+- [Data/Environment/](Data/Environment): environmental covariates (`environmental_data_GSA_*.RData`). Script 2 additionally expects Copernicus `.nc` downloads, `FPI_*_stack.RData` and `r_gravity_Med.RData`; these raw files are too large for the repository and are available on request. Copernicus data can also be downloaded from the public catalogue (free user account required).
+- [Tools/](Tools): saved helper functions (`.RData`) used by scripts 1-3 and Figure 5. the other helpers loaded by scripts 1-3 are missing.
 - Script 3 sources an external helper (`~/Scripts R/Divers/Variance_Inflation_Factor.R`) located outside this repository.
 
 ## Outputs ![outputs](https://img.shields.io/badge/-outputs-5d4037?style=flat-square)
