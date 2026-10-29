@@ -21,10 +21,10 @@ All figures can be regenerated directly from the provided outputs, without rerun
 6. **Piecewise SEM**: final model fitted to all GSAs ([6-Build_SEM_model_ALL_GSA_clean.R](6-Build_SEM_model_ALL_GSA_clean.R)).
 7. **Sensitivity analyses**: alternative biomass specifications and spatial block cross-validation ([7-Sensitivity_analyses.R](7-Sensitivity_analyses.R)).
 8. **Spatial exploratory analyses**: correlations and among-GSA comparisons ([8-Exploratory_analyses.R](8-Exploratory_analyses.R)).
-9. **Figures**: [Figure_1.R](Figure_1.R) to [Figure_6.R](Figure_6.R) (main text) and [Figure_S1.R](Figure_S1.R) to [Figure_S5.R](Figure_S5.R) (Supplementary materials).
+9. **Figures**: [Figure_1.R](Figure_1.R) to [Figure_6.R](Figure_6.R) (main text) and [Figure_S1.R](Figure_S1.R) to [Figure_S5.R](Figure_S5.R) (supporting information).
 
 ## Inputs and Data ![data](https://img.shields.io/badge/-data-283593?style=flat-square)
-- [Data/](Data): MEDITS survey data (`MEDITS_data_6_7_17_18_22_23.RData`), species traits (`MEDITS_fish_traits.RData`), and the intermediate objects `community_GSA_*.RData` and `SEM_data_all_GSA.RData`.
+- [Data/](Data): MEDITS survey data (`MEDITS_data_6_7_17_18_22_23.RData`), species traits (`MEDITS_fish_traits.RData`), and the intermediate objects `community_GSA_*.RData` and `SEM_data_all_GSA.RData`. For the MEDITS data cleaning and consistency checks, see [COISPA/RoME](https://github.com/COISPA/RoME), an R package for checking MEDITS survey data.
 - [Data/Environment/](Data/Environment): environmental covariates (`environmental_data_GSA_*.RData`). Script 2 additionally expects Copernicus `.nc` downloads, `FPI_*_stack.RData` and `r_gravity_Med.RData`, which are **not present** in the repository.
 - [Tools/](Tools): saved helper functions (`.RData`) used by scripts 1-3 and Figure 5. Present: the three effect-computation helpers used by `Figure_5.R`, `plot_env_na` and `select_axes_broken_stick_function`; the other helpers loaded by scripts 1-3 are missing.
 - Script 2 requires a Copernicus Marine account and a Python environment (via `reticulate`); credentials must be supplied by the user in place of the placeholders in the script.
