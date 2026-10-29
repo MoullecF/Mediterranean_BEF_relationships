@@ -83,6 +83,7 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 8. Generate figures as needed (`R/Figure_*.R`). All required outputs are already provided in the repository, so figures can be reproduced without rerunning steps 1 to 7.
 
 ## Repository Structure ![folders](https://img.shields.io/badge/-folders-3949ab?style=flat-square)
+- [:file\_folder: **R**](R/): Analysis scripts, to be run in numerical order
 - [R/0-Load libraries.R](R/0-Load%20libraries.R): dependency installation and loading.
 - `R/1-` to `R/3-`: diversity metrics, covariates and SEM dataset.
 - `R/4a-` to `R/4f-`: sub-model selection per response variable.
