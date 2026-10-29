@@ -75,7 +75,7 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
    ```r
    source(here::here("R/6-Build_SEM_model.R"))
    ```
-7. Run sensitivity and exploratory analyses:
+7. Run sensitivity and spatial exploratory analyses:
    ```r
    source(here::here("R/7-Sensitivity_analyses.R"))
    source(here::here("R/8-Exploratory_analyses.R"))
@@ -94,7 +94,14 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 - [:file\_folder: **Figures**](Figures/): Saved figures
 
 ## Computational Notes
-- Scripts `4a`–`4f` call `MuMIn::dredge()` on a large candidate set while re-estimating spatial correlation parameters for each candidate; each script can take **several hours** (`4b` runs in parallel on all but one core). They are not needed to reproduce the SEM (script 6 uses hard-coded final formulas) or the figures.
+- Scripts `4a`–`4f` call `MuMIn::dredge()` on a large candidate set while re-estimating spatial correlation parameters for each candidate; each script can take **several hours**. They are not needed to reproduce the SEM or the figures.
 - `mFD::alpha.fd.multidim()` in script 1 is computationally intensive.
-- Script 7 refits models repeatedly for cross-validation; its runtime has not been measured.
-- The `save()` calls in scripts 4a–4f and the `dredged_*.RData` loads in script 5 are commented out; uncomment them to pass dredging results between scripts.
+- Script 7 refits models repeatedly for cross-validation (can be long to run)
+
+## Citation ![cite](https://img.shields.io/badge/-cite-4e342e?style=flat-square)
+If you use this code or data, please cite:
+- **Code**: This GitHub repository (XXXXX/Mediterranean_BEF_relationships, main branch).
+- **Associated publication**: Manuscript under review.
+
+## License ![license](https://img.shields.io/badge/-license-263238?style=flat-square)
+This project is released under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
