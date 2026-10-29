@@ -94,7 +94,7 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 - [:file\_folder: **Outputs**](Outputs/): Saved outputs
 - [:file\_folder: **Figures**](Figures/): Saved figures
 
-## Computational Notes
+## Computational Notes ![notes](https://img.shields.io/badge/-notes-e65100?style=flat-square)
 - Scripts `4a`–`4f` call `MuMIn::dredge()` on a large candidate set while re-estimating spatial correlation parameters for each candidate; each script can take **several hours**. They are not needed to reproduce the SEM or the figures.
 - `mFD::alpha.fd.multidim()` in script 1 is computationally intensive.
 - Script 7 refits models repeatedly for cross-validation (can be long to run)
