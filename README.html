@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>readme</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="README_files/libs/clipboard/clipboard.min.js"></script>
+<script src="README_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="README_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="README_files/libs/quarto-html/popper.min.js"></script>
+<script src="README_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="README_files/libs/quarto-html/anchor.min.js"></script>
+<link href="README_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="README_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="README_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="README_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="README_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="biodiversity-ecosystem-functioning-relationships-in-mediterranean-fish-communities" class="level1">
+<h1>Biodiversity-ecosystem functioning relationships in Mediterranean fish communities</h1>
+<p>This repository contains the R code used to investigate biodiversity-ecosystem functioning (BEF) relationships in fish communities across four northern Mediterranean sub-regions: Northern Spain, the Gulf of Lion, the Adriatic Sea and the Aegean Sea. It analyses 23 years (1999–2021) of Mediterranean International Trawl Survey (MEDITS) data (10,034 hauls, 331 species) with piecewise structural equation modelling, relating environmental conditions and anthropogenic pressures to taxonomic diversity, functional diversity, community-weighted maximum body length and fish biomass. Fish biomass is treated as a biomass-related proxy for ecosystem functioning.</p>
+<section id="purpose-target" class="level2">
+<h2 class="anchored" data-anchor-id="purpose-target">Purpose <img src="https://img.shields.io/badge/-purpose-37474f?style=flat-square.png" class="img-fluid" alt="target"></h2>
+<ul>
+<li>Compute taxonomic, functional and trait-based diversity metrics for each trawl haul</li>
+<li>Assemble environmental and anthropogenic covariates at haul positions</li>
+<li>Select and fit the sub-models of a piecewise SEM with spatial correlation structures</li>
+<li>Summarise direct, indirect and total effects and run sensitivity analyses</li>
+</ul>
+</section>
+<section id="methods-and-workflow-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="methods-and-workflow-workflow">Methods and Workflow <img src="https://img.shields.io/badge/-workflow-00695c?style=flat-square.png" class="img-fluid" alt="workflow"></h2>
+<p>Scripts are numbered in execution order and must be run from the project root.</p>
+<ol type="1">
+<li><strong>Diversity metrics</strong>: taxonomic, functional (mFD) and community-weighted trait metrics per haul (<a href="1-Diversity_metrics.r">1-Diversity_metrics.r</a>).</li>
+<li><strong>Covariates</strong>: Copernicus Marine environmental variables, fishing pressure and gravity extracted at haul positions (<a href="2-Environmental_anthropogenic_covariatesR">2-Environmental_anthropogenic_covariatesR</a>).</li>
+<li><strong>SEM dataset</strong>: merging, filtering and collinearity screening (<a href="3-Build_dataset.R">3-Build_dataset.R</a>).</li>
+<li><strong>Sub-model selection</strong> (spatial correlation structure, then <code>MuMIn::dredge()</code>), one script per response: <a href="4a-Build_submodel_taxo_richness.R">4a</a>, <a href="4b-Build_submodel_taxo_evenness.R">4b</a>, <a href="4c-Build_submodel_log_cwm_length.R">4c</a>, <a href="4d-Build_submodel_fric.R">4d</a>, <a href="4e-Build_submodel_feve.R">4e</a>, <a href="4f-Build_submodel_biomass.R">4f</a>.</li>
+<li><strong>Residual spatial autocorrelation</strong>: Moran’s I of the final sub-models (<a href="5-Check_spatial_autocor.R">5-Check_spatial_autocor.R</a>).</li>
+<li><strong>Piecewise SEM</strong>: final model fitted to all GSAs (<a href="6-Build_SEM_model_ALL_GSA_clean.R">6-Build_SEM_model_ALL_GSA_clean.R</a>).</li>
+<li><strong>Sensitivity analyses</strong>: alternative biomass specifications and spatial block cross-validation (<a href="7-Sensitivity_analyses.R">7-Sensitivity_analyses.R</a>).</li>
+<li><strong>Summary statistics</strong>: correlations and among-GSA comparisons (<a href="8-Exploratory_analyses.R">8-Exploratory_analyses.R</a>).</li>
+<li><strong>Figures</strong>: <a href="Figure_1.R">Figure_1.R</a> to <a href="Figure_6.R">Figure_6.R</a> and <a href="Figure_S1.R">Figure_S1.R</a> to <a href="Figure_S5.R">Figure_S5.R</a>.</li>
+</ol>
+</section>
+<section id="inputs-and-data-data" class="level2">
+<h2 class="anchored" data-anchor-id="inputs-and-data-data">Inputs and Data <img src="https://img.shields.io/badge/-data-283593?style=flat-square.png" class="img-fluid" alt="data"></h2>
+<ul>
+<li><a href="Data">Data/</a>: MEDITS survey data (<code>MEDITS_data_6_7_17_18_22_23.RData</code>), species traits (<code>MEDITS_fish_traits.RData</code>), and the intermediate objects <code>community_GSA_*.RData</code> and <code>SEM_data_all_GSA.RData</code>.</li>
+<li><a href="Data/Environment">Data/Environment/</a>: environmental covariates (<code>environmental_data_GSA_*.RData</code>). Script 2 additionally expects Copernicus <code>.nc</code> downloads, <code>FPI_*_stack.RData</code> and <code>r_gravity_Med.RData</code>, which are <strong>not present</strong> in the repository.</li>
+<li><a href="Tools">Tools/</a>: saved helper functions (<code>.RData</code>) used by scripts 1-3 and Figure 5. Present: the three effect-computation helpers used by <code>Figure_5.R</code>, <code>plot_env_na</code> and <code>select_axes_broken_stick_function</code>; the other helpers loaded by scripts 1-3 are missing.</li>
+<li>Script 2 requires a Copernicus Marine account and a Python environment (via <code>reticulate</code>); credentials must be supplied by the user in place of the placeholders in the script.</li>
+<li>Script 3 sources an external helper (<code>~/Scripts R/Divers/Variance_Inflation_Factor.R</code>) located outside this repository.</li>
+</ul>
+</section>
+<section id="outputs-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs-outputs">Outputs <img src="https://img.shields.io/badge/-outputs-5d4037?style=flat-square.png" class="img-fluid" alt="outputs"></h2>
+<ul>
+<li><a href="Outputs">Outputs/</a>: <code>taxonomic_diversity_*</code>, <code>functional_diversity_*</code>, <code>other_diversity_metrics_*</code>, <code>diversity_*</code>, <code>SEM_model_ALL_GSA.RData</code>, <code>SEM_results_ALL_GSA.RData</code>.</li>
+<li><code>Sub_model_selection/</code> (not in the repository; create it before running scripts 4a–4f): <code>dredged_*.RData</code>, only if the <code>save()</code> calls in those scripts are uncommented.</li>
+<li><a href="Outputs/Moran_I_residuals.xlsx">Outputs/Moran_I_residuals.xlsx</a>: residual Moran’s I summary (script 5).</li>
+<li><a href="Outputs/Sensitivity_analyses">Outputs/Sensitivity_analyses/</a>: cross-validation results (<code>cv_results.rds</code>, <code>cv_*.csv</code>).</li>
+<li><a href="Figures">Figures/</a>: PNG figures (and <code>Figure_S3</code> PDF).</li>
+</ul>
+<p>Not every analysis can be rerun from the repository alone: the inputs listed above as missing, are needed for a full rerun. Figures 3 and 5 can use the saved SEM outputs; most other figures need only <code>Data/SEM_data_all_GSA.RData</code>.</p>
+</section>
+<section id="installation-and-environment-setup" class="level2">
+<h2 class="anchored" data-anchor-id="installation-and-environment-setup">Installation and Environment <img src="https://img.shields.io/badge/-setup-546e7a?style=flat-square.png" class="img-fluid" alt="setup"></h2>
+<ul>
+<li><strong>R version</strong>: developed with R 4.5.x</li>
+<li><strong>Packages</strong>: listed in <a href="0-Load%20libraries.R">0-Load libraries.R</a>, which installs missing CRAN packages and attaches the packages required by the scripts.</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"0-Load libraries.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="basic-usage-run" class="level2">
+<h2 class="anchored" data-anchor-id="basic-usage-run">Basic Usage <img src="https://img.shields.io/badge/-run-1b5e20?style=flat-square.png" class="img-fluid" alt="run"></h2>
+<p>Each analysis script sources the loader and clears the workspace on start-up, so scripts are independent and read their inputs from disk:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"./0-Load libraries.R"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run in order from the project root:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"1-Diversity_metrics.r"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"2-Environmental_anthropogenic_covariatesR"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"3-Build_dataset.R"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4a-Build_submodel_taxo_richness.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4b-Build_submodel_taxo_evenness.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4c-Build_submodel_log_cwm_length.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4d-Build_submodel_fric.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4e-Build_submodel_feve.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4f-Build_submodel_biomass.R"</span>)   <span class="co"># several hours</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"5-Check_spatial_autocor.R"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"6-Build_SEM_model_ALL_GSA_clean.R"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"7-Sensitivity_analyses.R"</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"8-Exploratory_analyses.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Figure scripts (<code>Figure_*.R</code>) are run individually once the required inputs exist.</p>
+</section>
+<section id="repository-structure-folders" class="level2">
+<h2 class="anchored" data-anchor-id="repository-structure-folders">Repository Structure <img src="https://img.shields.io/badge/-folders-3949ab?style=flat-square.png" class="img-fluid" alt="folders"></h2>
+<ul>
+<li><a href="0-Load%20libraries.R">0-Load libraries.R</a>: dependency installation and loading.</li>
+<li><code>1-</code> to <code>3-</code>: diversity metrics, covariates and SEM dataset.</li>
+<li><code>4a-</code> to <code>4f-</code>: sub-model selection per response variable.</li>
+<li><code>5-</code> to <code>8-</code>: residual checks, SEM, sensitivity analyses and summary statistics.</li>
+<li><code>Figure_*.R</code>: main and supplementary figures.</li>
+<li><a href="Data/">:file_folder: <strong>Tools</strong></a>: Helper functions</li>
+<li><a href="Data/">:file_folder: <strong>Data</strong></a>: Input data</li>
+<li><a href="Outputs/">:file_folder: <strong>Outputs</strong></a>: Saved outputs</li>
+<li><a href="Figures/">:file_folder: <strong>Figures</strong></a>: Saved figures</li>
+</ul>
+</section>
+<section id="computational-notes" class="level2">
+<h2 class="anchored" data-anchor-id="computational-notes">Computational Notes</h2>
+<ul>
+<li>Scripts <code>4a</code>–<code>4f</code> call <code>MuMIn::dredge()</code> on a large candidate set while re-estimating spatial correlation parameters for each candidate; each script can take <strong>several hours</strong> (<code>4b</code> runs in parallel on all but one core). They are not needed to reproduce the SEM (script 6 uses hard-coded final formulas) or the figures.</li>
+<li><code>mFD::alpha.fd.multidim()</code> in script 1 is computationally intensive.</li>
+<li>Script 7 refits models repeatedly for cross-validation; its runtime has not been measured.</li>
+<li>The <code>save()</code> calls in scripts 4a–4f and the <code>dredged_*.RData</code> loads in script 5 are commented out; uncomment them to pass dredging results between scripts.</li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
