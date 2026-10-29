@@ -84,11 +84,11 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 
 ## Repository Structure ![folders](https://img.shields.io/badge/-folders-3949ab?style=flat-square)
 - [:file\_folder: **R**](R/): Analysis scripts, to be run in numerical order
-- [R/0-Load libraries.R](R/0-Load%20libraries.R): dependency installation and loading.
-- `R/1-` to `R/3-`: diversity metrics, covariates and SEM dataset.
-- `R/4a-` to `R/4f-`: sub-model selection per response variable.
-- `R/5-` to `R/8-`: residual checks, SEM, sensitivity analyses and spatial exploratory analyses.
-- `R/Figure_*.R`: main and supplementary figures.
+   - `R/0-Load libraries.R`: dependency installation and loading.
+   - `R/1-` to `R/3-`: diversity metrics, covariates and SEM dataset.
+   - `R/4a-` to `R/4f-`: sub-model selection per response variable.
+   - `R/5-` to `R/8-`: residual checks, SEM, sensitivity analyses and spatial exploratory analyses.
+   - `R/Figure_*.R`: main and supplementary figures.
 - [:file\_folder: **Tools**](Tools/): Helper functions
 - [:file\_folder: **Data**](Data/): Input data
 - [:file\_folder: **Outputs**](Outputs/): Saved outputs
