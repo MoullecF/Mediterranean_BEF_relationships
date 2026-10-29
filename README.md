@@ -3,6 +3,8 @@
 
 This repository contains the R code used to investigate biodiversity-ecosystem functioning (BEF) relationships in fish communities across four northern Mediterranean sub-regions: Northern Spain, the Gulf of Lion, the Adriatic Sea and the Aegean Sea. It analyses 23 years (1999-2021) of Mediterranean International Trawl Survey (MEDITS) data (10,034 hauls, 331 species) with piecewise structural equation modelling, relating environmental conditions and anthropogenic pressures to taxonomic diversity, functional diversity, community-weighted maximum body length and fish biomass. Fish biomass is treated as a biomass-related proxy for ecosystem functioning.
 
+All figures can be regenerated directly from the provided outputs, without rerunning scripts 1-8.
+
 ## Purpose ![target](https://img.shields.io/badge/-purpose-37474f?style=flat-square)
 - Compute taxonomic, functional and trait-based diversity metrics for each trawl haul
 - Assemble environmental and anthropogenic covariates at haul positions
@@ -10,8 +12,6 @@ This repository contains the R code used to investigate biodiversity-ecosystem f
 - Summarise direct, indirect and total effects and run sensitivity analyses
 
 ## Methods and Workflow ![workflow](https://img.shields.io/badge/-workflow-00695c?style=flat-square)
-Scripts are numbered in execution order and must be run from the project root.
-
 1. **Diversity metrics**: taxonomic, functional (mFD) and community-weighted trait metrics per haul ([1-Diversity_metrics.r](1-Diversity_metrics.r)).
 2. **Covariates**: Copernicus Marine environmental variables, fishing pressure and gravity extracted at haul positions ([2-Environmental_anthropogenic_covariatesR](2-Environmental_anthropogenic_covariatesR)).
 3. **SEM dataset**: merging, filtering and collinearity screening ([3-Build_dataset.R](3-Build_dataset.R)).
@@ -20,8 +20,8 @@ Scripts are numbered in execution order and must be run from the project root.
 5. **Residual spatial autocorrelation**: Moran's I of the final sub-models ([5-Check_spatial_autocor.R](5-Check_spatial_autocor.R)).
 6. **Piecewise SEM**: final model fitted to all GSAs ([6-Build_SEM_model_ALL_GSA_clean.R](6-Build_SEM_model_ALL_GSA_clean.R)).
 7. **Sensitivity analyses**: alternative biomass specifications and spatial block cross-validation ([7-Sensitivity_analyses.R](7-Sensitivity_analyses.R)).
-8. **Summary statistics**: correlations and among-GSA comparisons ([8-Exploratory_analyses.R](8-Exploratory_analyses.R)).
-9. **Figures**: [Figure_1.R](Figure_1.R) to [Figure_6.R](Figure_6.R) and [Figure_S1.R](Figure_S1.R) to [Figure_S5.R](Figure_S5.R).
+8. **Spatial exploratory analyses**: correlations and among-GSA comparisons ([8-Exploratory_analyses.R](8-Exploratory_analyses.R)).
+9. **Figures**: [Figure_1.R](Figure_1.R) to [Figure_6.R](Figure_6.R) (main text) and [Figure_S1.R](Figure_S1.R) to [Figure_S5.R](Figure_S5.R) (Supplementary materials).
 
 ## Inputs and Data ![data](https://img.shields.io/badge/-data-283593?style=flat-square)
 - [Data/](Data): MEDITS survey data (`MEDITS_data_6_7_17_18_22_23.RData`), species traits (`MEDITS_fish_traits.RData`), and the intermediate objects `community_GSA_*.RData` and `SEM_data_all_GSA.RData`.
