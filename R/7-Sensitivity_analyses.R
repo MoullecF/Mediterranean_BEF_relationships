@@ -13,13 +13,13 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # 1. Load data 
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Prepare the data
 SEM_data <- SEM_data %>%
@@ -190,7 +190,7 @@ cv_oof <- data.frame(haul_id = dat$haul_id, GSA = dat$GSA, year = dat$year, bloc
 names(cv_oof)[-(1:6)] <- paste0("pred_", names(cv_res))
 
 # ---- save ----
-# out_dir <- "Outputs/Sensitivity_analyses"; dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+# out_dir <- here::here("Outputs/Sensitivity_analyses"); dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 # saveRDS(list(cv_res = cv_res, fold_assignment = dat[, c("haul_id","GSA","block","fold")],
 #              summary = cv_summary, folds = cv_folds, delta = cv_delta,
 #              by_gsa = cv_by_gsa, oof = cv_oof), file.path(out_dir, "cv_results.rds"))

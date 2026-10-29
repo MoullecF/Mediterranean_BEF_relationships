@@ -9,13 +9,13 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # Load SEM model and plot R² values for each sub-model
 
-load("Outputs/SEM_model_ALL_GSA.RData")
+load(here::here("Outputs/SEM_model_ALL_GSA.RData"))
   
 # Extract R²
 r2 <- rsquared(SEM_model)
@@ -48,4 +48,4 @@ p <- ggplot(r2_long, aes(x = Response, y = R2, fill = Component)) +
   theme(legend.position = c(0.80, 0.85))
 
 # Save figure
-# ggsave("Figures/Figure_3.png", plot = p, width = 9, height = 4.5, dpi = 300)
+# ggsave(here::here("Figures/Figure_3.png"), plot = p, width = 9, height = 4.5, dpi = 300)

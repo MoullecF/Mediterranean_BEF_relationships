@@ -11,11 +11,11 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 options(na.action = "na.omit")
 
 SEM_data <- SEM_data %>%

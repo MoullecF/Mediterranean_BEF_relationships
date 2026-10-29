@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -148,5 +148,5 @@ g <- DiagrammeR::grViz(graph_code)
 
 # save
 svg <- DiagrammeRsvg::export_svg(g)
-# rsvg::rsvg_png(charToRaw(svg), file = "Figures/Figure_S3.png", width = 2400)
-# rsvg::rsvg_pdf(charToRaw(svg), file = "Figures/Figure_S3_apriori_pSEM_structure.pdf")
+# rsvg::rsvg_png(charToRaw(svg), file = here::here("Figures/Figure_S3.png"), width = 2400)
+# rsvg::rsvg_pdf(charToRaw(svg), file = here::here("Figures/Figure_S3_apriori_pSEM_structure.pdf"))

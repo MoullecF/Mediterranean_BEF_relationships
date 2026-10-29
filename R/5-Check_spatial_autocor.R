@@ -12,13 +12,13 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # 1. Load data and fit models ------------------------------------------------
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # load("Sub_model_selection/dredged_tric.RData")
 # load("Sub_model_selection/dredged_teve.RData")
@@ -219,4 +219,4 @@ moran_wide <- moran_summary %>%
 # write_xlsx(list(cells   = moran_cells,
           #       summary = moran_summary,
           #       wide    = moran_wide),
-          #  path = "Outputs/Moran_I_residuals.xlsx")
+          #  path = here::here("Outputs/Moran_I_residuals.xlsx"))

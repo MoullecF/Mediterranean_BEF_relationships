@@ -9,8 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-# Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -18,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Define GSA colors
 GSA_colors <- c("Adriatic_Sea" = "#0072B2", "Aegean_Sea" = "#D55E00", "Catalan_Sea" = "#009E73", "Gulf_of_Lion" = "#CC79A7")
@@ -57,4 +56,4 @@ haul_labels <- data.frame(
         plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 10))
 
-# ggsave("Figures/Figure_1.png", plot = gg_trawling_positions, width = 8, height = 6, dpi = 300)
+# ggsave(here::here("Figures/Figure_1.png"), plot = gg_trawling_positions, width = 8, height = 6, dpi = 300)

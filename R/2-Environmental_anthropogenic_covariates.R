@@ -10,7 +10,7 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -21,8 +21,8 @@ rm(list = ls())
 # Set GSA number
 GSA <- c(6, 7, 17, 18, 22, 23)
 
-load(paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
-load(paste0("Outputs/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Data"), "/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Outputs"), "/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # Merge haul-level diversity with haul-level total biomass from community
 haul_biomass <- community %>%
@@ -87,10 +87,10 @@ f_1 <- copernicus_download(
   dataset_version = "202511")
 
 # Move to data folder
-file.rename(f_1, paste0("Data/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+file.rename(f_1, paste0(here::here("Data"), "/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Read data as raster 
-raster_t_data <- terra::rast(paste0("Data/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+raster_t_data <- terra::rast(paste0(here::here("Data"), "/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Check layers
 names(raster_t_data)
@@ -112,10 +112,10 @@ f_2 <- copernicus_download(dataset_id = "cmems_mod_med_phy-sal_my_4.2km_P1M-m", 
 
 
 # Move to data folder
-file.rename(f_2, paste0("Data/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+file.rename(f_2, paste0(here::here("Data"), "/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Read data as raster 
-raster_s_data <- terra::rast(paste0("Data/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+raster_s_data <- terra::rast(paste0(here::here("Data"), "/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Check layers
 names(raster_s_data)
@@ -138,10 +138,10 @@ f_3 <- copernicus_download(
 )
 
 # Move to data folder (may fail across drives)
-file.rename(f_3, paste0("Data/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+file.rename(f_3, paste0(here::here("Data"), "/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Read data as raster
-chla_stack <- rast(paste0("Data/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+chla_stack <- rast(paste0(here::here("Data"), "/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
 
 # Check layers
 names(chla_stack)
@@ -156,13 +156,13 @@ terra::plot(chla_stack[[1:12]])
 ## Compute mean, sd, and sum values ----
 
 # Load rasters 
-temperature_stack <- terra::rast(paste0("Data/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
-chla_stack <- terra::rast(paste0("Data/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
-salinity_stack <- terra::rast(paste0("Data/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
-FPI_OTB <- get(load("Data/Environment/FPI_OTB_stack.RData")) %>% terra::rast(FPI_OTB)
-FPI_PS <- get(load("Data/Environment/FPI_PS_stack.RData")) %>% terra::rast(FPI_PS)
-FPI_SSF <- get(load("Data/Environment/FPI_SSF_stack.RData")) %>% terra::rast(FPI_SSF)
-Gravity_layer <- get(load("./Data/Environment/r_gravity_Med.RData")) %>% terra::rast(Gravity_layer)
+temperature_stack <- terra::rast(paste0(here::here("Data"), "/Environment/temperature_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+chla_stack <- terra::rast(paste0(here::here("Data"), "/Environment/chlorophyll_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+salinity_stack <- terra::rast(paste0(here::here("Data"), "/Environment/salinity_data_GSA_",paste0(GSA, collapse = "_"),".nc"))
+FPI_OTB <- get(load(here::here("Data/Environment/FPI_OTB_stack.RData"))) %>% terra::rast(FPI_OTB)
+FPI_PS <- get(load(here::here("Data/Environment/FPI_PS_stack.RData"))) %>% terra::rast(FPI_PS)
+FPI_SSF <- get(load(here::here("Data/Environment/FPI_SSF_stack.RData"))) %>% terra::rast(FPI_SSF)
+Gravity_layer <- get(load(here::here("Data/Environment/r_gravity_Med.RData"))) %>% terra::rast(Gravity_layer)
 
 # Subset physical data to compute each variable on its own
 sst_stack <- temperature_stack[[grep("thetao", names(temperature_stack))]] # sst
@@ -257,7 +257,7 @@ for (v in names(stacks)) {
 # Check if there are any NAs in the extracted values
 colSums(is.na(environmental_data))
 
-load("Tools/plot_env_na.RData")
+load(here::here("Tools/plot_env_na.RData"))
 plot_env_na(environmental_data, raster = sst_stack[[1]], raster_name = "SST mean (°C)", env_vars = c("sst_mean"), point_size = 1.8, point_alpha = 1, buf = 1)
 
 # Extract FPI values for each gear type
@@ -349,4 +349,4 @@ environmental_data <- environmental_data %>%
   log_depth = log(depth)) 
 
 # Save
-# save(environmental_data, file = paste0("Data/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"),".RData"))
+# save(environmental_data, file = paste0(here::here("Data"), "/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"),".RData"))

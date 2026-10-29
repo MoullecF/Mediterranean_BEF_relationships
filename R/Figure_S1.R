@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Plot number of hauls in each GSA and year
 SEM_data$id <- 1:nrow(SEM_data)
@@ -47,4 +47,4 @@ gg_number_hauls_gsa <- ggplot(haul_counts_gsa, aes(year, GSA, fill = haul_count)
       color = GSA_colors[levels(haul_counts_gsa$GSA)],
       face = "bold"))
 
-# ggsave("Figures/Figure_S1.png", plot = gg_number_hauls_gsa, width = 8, height = 4, dpi = 300)
+# ggsave(here::here("Figures/Figure_S1.png"), plot = gg_number_hauls_gsa, width = 8, height = 4, dpi = 300)

@@ -9,19 +9,19 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # Load necessary data and functions
 
-load("Tools/extract_direct_effects_function.RData")
-load("Tools/compute_indirect_effects_GSA_decomp_function.RData")
-load("Tools/compute_total_effects_GSA_function.RData")
+load(here::here("Tools/extract_direct_effects_function.RData"))
+load(here::here("Tools/compute_indirect_effects_GSA_decomp_function.RData"))
+load(here::here("Tools/compute_total_effects_GSA_function.RData"))
 
-load("Outputs/SEM_results_ALL_GSA.RData")
-load("Outputs/SEM_model_ALL_GSA.RData")
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Outputs/SEM_results_ALL_GSA.RData"))
+load(here::here("Outputs/SEM_model_ALL_GSA.RData"))
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 SEM_data <- SEM_data %>%
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
@@ -287,4 +287,4 @@ figure_5_6 <- (plot_A / plot_B / plot_C / plot_D / plot_E) +
   theme(plot.tag = element_text(face = "bold", size = tag_text_size))
 
 # Save
-# ggsave("Figures/Figure_5.png", plot = figure_5_6, width = 18.5, height = 27, dpi = 300)
+# ggsave(here::here("Figures/Figure_5.png"), plot = figure_5_6, width = 18.5, height = 27, dpi = 300)

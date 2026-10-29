@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 options(na.action = "na.omit")
 
@@ -240,4 +240,4 @@ combined_plot <- (Log_biomass_gsa | CWM_length_gsa) / (taxo_rich_gsa | taxo_ev_g
   plot_layout(guides = "collect") +
   plot_annotation(tag_levels = "A")
 
-# ggsave("Figures/Figure_S2.png", plot = combined_plot, width = 12, height = 17, dpi = 300)
+# ggsave(here::here("Figures/Figure_S2.png"), plot = combined_plot, width = 12, height = 17, dpi = 300)

@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Scale continuous variables and convert GSA to factor
 SEM_data <- SEM_data %>%
@@ -138,4 +138,4 @@ fig_residuals <- (diag_A) /
 (diag_F)
 
 # Save figure
-# ggsave("Figures/Figure_S4.png", plot = fig_residuals, width = 15, height = 15, dpi = 300)
+# ggsave(here::here("Figures/Figure_S4.png"), plot = fig_residuals, width = 15, height = 15, dpi = 300)

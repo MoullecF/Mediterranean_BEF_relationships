@@ -9,7 +9,7 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -18,7 +18,7 @@ rm(list = ls())
 # ==============================================================================
 
 # Load data
-data <- get(load("Data/MEDITS_data_6_7_17_18_22_23.RData")) ; names(data)
+data <- get(load(here::here("Data/MEDITS_data_6_7_17_18_22_23.RData"))) ; names(data)
 
 # Define the area of interest
 GSA <- c(6, 7, 17, 18, 22, 23)
@@ -36,14 +36,14 @@ length(unique(community$haul_id))
 length(unique(community$taxon)) 
 
 # Save filtered community data
-# save(community, file = paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(community, file = paste0(here::here("Data"), "/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # ==============================================================================
 # 3. Taxonomic diversity
 # ==============================================================================
 
 # Taxonomic diversity
-community <- get(load(paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData")))
+community <- get(load(paste0(here::here("Data"), "/community_GSA_", paste0(GSA, collapse = "_"), ".RData")))
 
 ### Compute richness, evenness (Pielou's), and diversity (Shannon-Wiener) ----
 taxonomic_diversity <- community %>%
@@ -65,14 +65,14 @@ community <- community %>%
   filter(!haul_id %in% hauls_richness_1)
 
 # Save
-# save(taxonomic_diversity, file = paste0("Outputs/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(taxonomic_diversity, file = paste0(here::here("Outputs"), "/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
   
 # ==============================================================================
 # 4. Functional diversity
 # ==============================================================================
 
 # Functional diversity
-traits <- get(load("Data/MEDITS_fish_traits.RData"))
+traits <- get(load(here::here("Data/MEDITS_fish_traits.RData")))
 
 # Merge traits with survey species
 community_traits <- data.frame(taxon = unique(community$taxon)) %>%
@@ -152,7 +152,7 @@ fish_tr_faxes <- mFD::traits.faxes.cor(sp_tr = tm, sp_faxes_coord = sp_faxes_coo
 fish_tr_faxes[which(fish_tr_faxes$p.value < 0.05), ]
 
 # Look number of dimensions to include in the functional space and compute variance explained by the selected axes 
-load("Tools/select_axes_broken_stick_function.RData")
+load(here::here("Tools/select_axes_broken_stick_function.RData"))
 fspace_axes <- select_axes_broken_stick(pc_eigenvalues = fspaces_quality_fish$details_fspaces$pc_eigenvalues, mad_vals = fspaces_quality_fish$quality_fspaces$mad, keep = c("lowest_mad"), plot = TRUE, verbose = TRUE)
 
 # Functional alpha diversity indices in a multidimensional space
@@ -188,7 +188,7 @@ functional_diversity <- alpha_fd_indices_fish$functional_diversity_indices %>%
   left_join(tibble::enframe(functio_redund_q1, name = "haul_id", value = "fredund"), by = "haul_id")
 
 # Save
-# save(functional_diversity, file = paste0("Outputs/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(functional_diversity, file = paste0(here::here("Outputs"), "/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # ==============================================================================
 # 5. Community-weighted and trophic metrics
@@ -224,13 +224,13 @@ feeding <- community %>%
 other_diversity_metrics <- left_join(weighted_metrics, feeding, by = "haul_id")
 
 # Save
-# save(other_diversity_metrics, file = paste0("Outputs/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(other_diversity_metrics, file = paste0(here::here("Outputs"), "/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # Join all metrics
 # Load data
-load(paste0("Outputs/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
-load(paste0("Outputs/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
-load(paste0("Outputs/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Outputs"), "/taxonomic_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Outputs"), "/functional_diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Outputs"), "/other_diversity_metrics_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 # keep only hauls present in all datasets / just to be sure
 common_hauls <- Reduce(intersect, list(taxonomic_diversity$haul_id, functional_diversity$haul_id, other_diversity_metrics$haul_id))
@@ -242,4 +242,4 @@ diversity <- taxonomic_diversity %>%
   left_join(other_diversity_metrics %>% filter(haul_id %in% common_hauls), by = "haul_id")
 
 # Save
-# save(diversity, file = paste0("Outputs/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+# save(diversity, file = paste0(here::here("Outputs"), "/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))

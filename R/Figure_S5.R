@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 SEM_data <- SEM_data %>%
   mutate(log_Length_max_cwm = log(Length_max_cwm)) %>%
@@ -171,5 +171,5 @@ figure_S5 <- ggplot(pred_all, aes(x = value, y = biomass, color = GSA, fill = GS
 # =========================
 # 8. EXPORT
 # =========================
-# ggsave("Figures/Figure_S5.png", plot = figure_S5, width = 7, height = 9, dpi = 300)
+# ggsave(here::here("Figures/Figure_S5.png"), plot = figure_S5, width = 7, height = 9, dpi = 300)
 

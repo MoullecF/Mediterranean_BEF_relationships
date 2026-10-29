@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 SEM_data$GSA <- factor(SEM_data$GSA, levels = c("Adriatic_Sea", "Aegean_Sea", "Catalan_Sea", "Gulf_of_Lion"))
 
@@ -173,4 +173,4 @@ combined_plot <- combined_plot +
   plot_layout(axes = "collect", axis_titles = "collect") +  
   plot_annotation(tag_levels = "A")
 
-# ggsave("Figures/Figure_2.png", plot = combined_plot, width = 16, height = 11, dpi = 300)
+# ggsave(here::here("Figures/Figure_2.png"), plot = combined_plot, width = 16, height = 11, dpi = 300)

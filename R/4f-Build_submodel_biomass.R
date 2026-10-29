@@ -12,7 +12,7 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -23,7 +23,7 @@ rm(list = ls())
 options(na.action = "na.fail")   # required by dredge()
 
 # Load the data (SEM_data)
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Scale continuous variables and convert GSA to factor
 SEM_data <- SEM_data %>%

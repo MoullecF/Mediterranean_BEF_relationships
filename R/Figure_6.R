@@ -9,7 +9,7 @@
 # 1. Load libraries and prepare the environment
 # ==============================================================================
 
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
@@ -17,7 +17,7 @@ rm(list = ls())
 # 2. Load and prepare data
 # ==============================================================================
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # Data preprocessing: scale numeric variables and set GSA as a factor with specific levels
 SEM_data <- SEM_data %>%
@@ -159,4 +159,4 @@ slope_plot <- ggplot(slope_comparisons_me, aes(x = contrast_final, y = metric, f
   theme(axis.text.x = element_text(angle = 45, hjust = 1), axis.title = element_text(face = "bold", size = 11)) +
   labs(x = "GSA comparison", y = "Biodiversity metrics", title = "Pairwise differences between GSA slopes")
 
-# ggsave("Figures/Figure_6.png", plot = slope_plot, width = 6, height = 4, dpi = 300)
+# ggsave(here::here("Figures/Figure_6.png"), plot = slope_plot, width = 6, height = 4, dpi = 300)

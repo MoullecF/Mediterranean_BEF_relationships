@@ -12,13 +12,13 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # 1. Load data and fit models ------------------------------------------------
 
-load("Data/SEM_data_all_GSA.RData")
+load(here::here("Data/SEM_data_all_GSA.RData"))
 
 # load("Sub_model_selection/dredged_tric.RData")
 # load("Sub_model_selection/dredged_teve.RData")
@@ -114,5 +114,5 @@ SEM_results$dTable
 SEM_results$Cstat
 
 # Save the SEM model and results
-# save(SEM_model, file = "Outputs/SEM_model_ALL_GSA.RData")
-# save(SEM_results, file = "Outputs/SEM_results_ALL_GSA.RData")
+# save(SEM_model, file = here::here("Outputs/SEM_model_ALL_GSA.RData"))
+# save(SEM_results, file = here::here("Outputs/SEM_results_ALL_GSA.RData"))

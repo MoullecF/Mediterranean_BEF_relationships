@@ -7,14 +7,14 @@
 # ==============================================================================
 
 # Load libraries
-source("./0-Load libraries.R")
+source(here::here("R/0-Load libraries.R"))
 
 rm(list = ls())
 
 # Helper functions (external to the repository; the first path is outside the project folder)
-load("Tools/make_correlation_plot_function.RData")
+load(here::here("Tools/make_correlation_plot_function.RData"))
 source("~/Scripts R/Divers/Variance_Inflation_Factor.R")
-load("Tools/corvif_function.RData")
+load(here::here("Tools/corvif_function.RData"))
 
 # ==============================================================================
 # 2. Load and merge data
@@ -22,9 +22,9 @@ load("Tools/corvif_function.RData")
 
 # GSAs to process
 GSA <- c(6, 7, 17, 18, 22, 23)
-load(paste0("Data/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
-load(paste0("Outputs/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
-load(paste0("Data/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Data"), "/community_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Outputs"), "/diversity_GSA_", paste0(GSA, collapse = "_"), ".RData"))
+load(paste0(here::here("Data"), "/Environment/environmental_data_GSA_", paste0(GSA, collapse = "_"), ".RData"))
 
 haul_biomass <- community %>%
     summarise(wgt_cpua = sum(wgt_cpua, na.rm = TRUE), .by = haul_id)
@@ -163,4 +163,4 @@ dplyr::mutate(GSA = as.factor(GSA)) %>%
 as.data.frame()
 
 # Save the data frame for SEM
-# save(SEM_data, file = "Data/SEM_data_all_GSA.RData")
+# save(SEM_data, file = here::here("Data/SEM_data_all_GSA.RData"))
