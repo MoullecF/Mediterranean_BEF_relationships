@@ -18,9 +18,9 @@ All figures can be regenerated directly from the provided outputs, without rerun
 4. **Sub-model selection** (spatial correlation structure, then `MuMIn::dredge()`), one script per response:
    [4a](R/4a-Build_submodel_taxo_richness.R), [4b](R/4b-Build_submodel_taxo_evenness.R), [4c](R/4c-Build_submodel_log_cwm_length.R), [4d](R/4d-Build_submodel_fric.R), [4e](R/4e-Build_submodel_feve.R), [4f](R/4f-Build_submodel_biomass.R).
 5. **Residual spatial autocorrelation**: Moran's I of the final sub-models ([5-Check_spatial_autocor.R](R/5-Check_spatial_autocor.R)).
-6. **Piecewise SEM**: final model fitted to all GSAs ([6-Build_SEM_model.R](R/6-Build_SEM_model.R)).
+6. **Piecewise SEM**: final model fitted ([6-Build_SEM_model.R](R/6-Build_SEM_model.R)).
 7. **Sensitivity analyses**: alternative biomass specifications and spatial block cross-validation ([7-Sensitivity_analyses.R](R/7-Sensitivity_analyses.R)).
-8. **Spatial exploratory analyses**: correlations and among-GSA comparisons ([8-Exploratory_analyses.R](R/8-Exploratory_analyses.R)).
+8. **Spatial exploratory analyses**: correlations and among-sub-region comparisons ([8-Exploratory_analyses.R](R/8-Exploratory_analyses.R)).
 9. **Figures**: [Figure_1.R](R/Figure_1.R) to [Figure_6.R](R/Figure_6.R) (main text) and [Figure_S1.R](R/Figure_S1.R) to [Figure_S5.R](R/Figure_S5.R) (supporting information).
 
 ## Inputs and Data ![data](https://img.shields.io/badge/-data-283593?style=flat-square)
@@ -83,11 +83,11 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 8. Generate figures as needed (`R/Figure_*.R`). All required outputs are already provided in the repository, so figures can be reproduced without rerunning steps 1 to 7.
 
 ## Repository Structure ![folders](https://img.shields.io/badge/-folders-3949ab?style=flat-square)
-- [0-Load libraries.R](R/0-Load%20libraries.R): dependency installation and loading.
-- `1-` to `3-`: diversity metrics, covariates and SEM dataset.
-- `4a-` to `4f-`: sub-model selection per response variable.
-- `5-` to `8-`: residual checks, SEM, sensitivity analyses and summary statistics.
-- `Figure_*.R`: main and supplementary figures.
+- [R/0-Load libraries.R](R/0-Load%20libraries.R): dependency installation and loading.
+- `R/1-` to `R/3-`: diversity metrics, covariates and SEM dataset.
+- `R/4a-` to `R/4f-`: sub-model selection per response variable.
+- `R/5-` to `R/8-`: residual checks, SEM, sensitivity analyses and spatial exploratory analyses.
+- `R/Figure_*.R`: main and supplementary figures.
 - [:file\_folder: **Tools**](Tools/): Helper functions
 - [:file\_folder: **Data**](Data/): Input data
 - [:file\_folder: **Outputs**](Outputs/): Saved outputs
