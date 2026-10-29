@@ -109,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>SEM dataset</strong>: merging, filtering and collinearity screening (<a href="3-Build_dataset.R">3-Build_dataset.R</a>).</li>
 <li><strong>Sub-model selection</strong> (spatial correlation structure, then <code>MuMIn::dredge()</code>), one script per response: <a href="4a-Build_submodel_taxo_richness.R">4a</a>, <a href="4b-Build_submodel_taxo_evenness.R">4b</a>, <a href="4c-Build_submodel_log_cwm_length.R">4c</a>, <a href="4d-Build_submodel_fric.R">4d</a>, <a href="4e-Build_submodel_feve.R">4e</a>, <a href="4f-Build_submodel_biomass.R">4f</a>.</li>
 <li><strong>Residual spatial autocorrelation</strong>: Moran’s I of the final sub-models (<a href="5-Check_spatial_autocor.R">5-Check_spatial_autocor.R</a>).</li>
-<li><strong>Piecewise SEM</strong>: final model fitted to all GSAs (<a href="6-Build_SEM_model_ALL_GSA_clean.R">6-Build_SEM_model_ALL_GSA_clean.R</a>).</li>
+<li><strong>Piecewise SEM</strong>: final model fitted to all GSAs (<a href="6-Build_SEM_model.R">6-Build_SEM_model.R</a>).</li>
 <li><strong>Sensitivity analyses</strong>: alternative biomass specifications and spatial block cross-validation (<a href="7-Sensitivity_analyses.R">7-Sensitivity_analyses.R</a>).</li>
 <li><strong>Summary statistics</strong>: correlations and among-GSA comparisons (<a href="8-Exploratory_analyses.R">8-Exploratory_analyses.R</a>).</li>
 <li><strong>Figures</strong>: <a href="Figure_1.R">Figure_1.R</a> to <a href="Figure_6.R">Figure_6.R</a> and <a href="Figure_S1.R">Figure_S1.R</a> to <a href="Figure_S5.R">Figure_S5.R</a>.</li>
@@ -160,7 +160,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4e-Build_submodel_feve.R"</span>)   <span class="co"># several hours</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"4f-Build_submodel_biomass.R"</span>)   <span class="co"># several hours</span></span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"5-Check_spatial_autocor.R"</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"6-Build_SEM_model_ALL_GSA_clean.R"</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"6-Build_SEM_model.R"</span>)</span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"7-Sensitivity_analyses.R"</span>)</span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"8-Exploratory_analyses.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Figure scripts (<code>Figure_*.R</code>) are run individually once the required inputs exist.</p>
