@@ -26,8 +26,7 @@ All figures can be regenerated directly from the provided outputs, without rerun
 ## Inputs and Data ![data](https://img.shields.io/badge/-data-283593?style=flat-square)
 - [Data/](Data): MEDITS survey data (`MEDITS_data_6_7_17_18_22_23.RData`), species traits (`MEDITS_fish_traits.RData`), and the intermediate objects `community_GSA_*.RData` and `SEM_data_all_GSA.RData`. For the MEDITS data cleaning and consistency checks, see [COISPA/RoME](https://github.com/COISPA/RoME), an R package for checking MEDITS survey data.
 - [Data/Environment/](Data/Environment): environmental covariates (`environmental_data_GSA_*.RData`). Script 2 additionally expects Copernicus `.nc` downloads, `FPI_*_stack.RData` and `r_gravity_Med.RData`; these raw files are too large for the repository and are available on request. Copernicus data can also be downloaded from the public catalogue (free user account required).
-- [Tools/](Tools): saved helper functions (`.RData`) used by scripts 1-3 and Figure 5. the other helpers loaded by scripts 1-3 are missing.
-- Script 3 sources an external helper (`~/Scripts R/Divers/Variance_Inflation_Factor.R`) located outside this repository.
+- [Tools/](Tools): saved helper functions (`.RData`) used by scripts 1-3 and Figure 5.
 
 ## Outputs ![outputs](https://img.shields.io/badge/-outputs-5d4037?style=flat-square)
 - [Outputs/](Outputs): `taxonomic_diversity_*`, `functional_diversity_*`, `other_diversity_metrics_*`, `diversity_*`, `SEM_model_ALL_GSA.RData`, `SEM_results_ALL_GSA.RData`.
