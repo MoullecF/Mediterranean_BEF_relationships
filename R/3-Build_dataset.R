@@ -95,10 +95,16 @@ options(max.print = 2000)
 print(quantile(data$Biomass, probs = seq(0, 1, 0.0005))) 
 
 # Remove biomass outliers, log-transform chla_mean and remove hauls with CWM of max length > 250 cm (as only one rare species is driving the index (HEXAGRI))
+
+# Number of hauls with Biomass < 15 and > 5700
+dplyr::n_distinct(data$haul_id[data$Biomass < 15]) # 51 hauls with Biomass < 15
+dplyr::n_distinct(data$haul_id[data$Biomass > 5700]) # 51 hauls with Biomass > 5700
+
 data <- data %>%
   filter(Biomass > 15 & Biomass < 5700) %>% # removed 0.5% of lowest and highest values (1% in total)
   mutate(log_chla_mean = log(chla_mean)) %>%
-  filter(Length_max_cwm <= 250)
+  filter(Length_max_cwm <= 250) %>%
+  mutate(Log_Length_max_cwm = log(Length_max_cwm))
 
 # Number of hauls per GSA after filtering, group 17 and 18 and 22 and 23 together as they are the "same" sub-regions
 data %>%
@@ -119,22 +125,22 @@ data %>%
 
 ### Test for correlation between covariates
 df_cor1 = data[, c("tric", "teve", "feve", "fric",
-                  "Length_max_cwm", "log_biomass", "depth",
+                  "Log_Length_max_cwm", "depth",
                   "sst_mean", "sst_sd", "sbt_mean", "sbt_sd", "so_mean", 
                   "so_sd", "chla_mean", "FPI_OTB", "FPI_PS", "FPI_SSF", "gravity")]
 
 cor1 <- make_correlation_plot(df_cor = df_cor1, threshold = 0.7, method = "pearson") 
-usdm::vifstep(as.data.frame(df_cor1), th=5, keep= c("log_biomass"), size = 10100) # keep log_biomass as it is the response variable
+usdm::vifstep(as.data.frame(df_cor1), th=5, size = 10100) 
 
 #  sbt_sd and FPI_PS removed
-df_cor2 = data[, c("tric", "teve", "feve", "fric", "Length_max_cwm", "log_biomass",
+df_cor2 = data[, c("tric", "teve", "feve", "fric", "Log_Length_max_cwm",
                     "depth", "sst_mean", "sst_sd", "sbt_mean", "so_mean", 
                   "so_sd", "chla_mean", "FPI_OTB", "FPI_SSF", "gravity")]
 
 
 corr_fig <- ggcorrplot(cor(df_cor2), type = "lower", lab = TRUE, method="circle", colors = c("red", "white", "blue"), digits = 2, legend.title = "Pearson\nCorrelation", ggtheme=theme_bw())
-usdm::vifstep(as.data.frame(df_cor2), th=5, keep= c("log_biomass"), size = 10100) # keep log_biomass as it is the response variable
-# No variable from the 16 input variables has collinearity problem. 
+usdm::vifstep(as.data.frame(df_cor2), th=5, size = 10100)
+# No variable from the 15 input variables has collinearity problem. 
 
 # ==============================================================================
 # 4. Build and save the SEM dataset
