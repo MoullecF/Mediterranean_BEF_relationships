@@ -102,7 +102,7 @@ Run the scripts in order. All scripts are in `R/` and use `here::here()` for pat
 ## Citation ![cite](https://img.shields.io/badge/-cite-4e342e?style=flat-square)
 If you use this code or data, please cite:
 - **Code**: This GitHub repository (XXXXX/Mediterranean_BEF_relationships, main branch).
-- **Associated publication**: Manuscript under review.
+- **Associated publication**: Taxonomic rather than functional diversity best tracks fish biomass, with effects that differ among Mediterranean sub-regions.Manuscript submitted.
 
 ## License ![license](https://img.shields.io/badge/-license-263238?style=flat-square)
 This project is released under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
